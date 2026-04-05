@@ -17,6 +17,7 @@ export function PortfolioDeepDive() {
   const { t } = useLanguage();
   const [tooltipVisible, setTooltipVisible] = useState<string | null>(null);
   const [classificationFilter, setClassificationFilter] = useState<'all' | 'National' | 'Council'>('all');
+  const [attentionClassFilter, setAttentionClassFilter] = useState<'all' | 'National' | 'Council'>('all');
   const [filters, setFilters] = useState<FilterState>(defaultFilterState);
   
   const showTooltip = (id: string) => setTooltipVisible(id);
@@ -66,9 +67,9 @@ export function PortfolioDeepDive() {
   // High-risk projects
   const highRiskProjects = filteredByClassification.filter(p => p.openRisks >= 6);
 
-  // Projects needing attention (critical or at-risk with high budget)
   const projectsNeedingAttention = filteredByClassification
     .filter(p => p.status === 'critical' || (p.status === 'at-risk' && p.budget > 5000000))
+    .filter(p => attentionClassFilter === 'all' || p.classification.type === attentionClassFilter)
     .sort((a, b) => b.budget - a.budget);
 
   return (
@@ -309,7 +310,22 @@ export function PortfolioDeepDive() {
             <h3 className="font-semibold text-gray-900 mb-2 text-sm flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-red-500" />
               Projects Needing Attention
-              <span className="ml-auto"><ChartInfoToggle description="Lists projects with at-risk or critical status, showing their classification, budget, and open risk count. Click a project name to see full details." /></span>
+              <div className="flex items-center gap-1 ml-auto">
+                {(['all', 'National', 'Council'] as const).map(filter => (
+                  <button
+                    key={filter}
+                    onClick={() => setAttentionClassFilter(filter)}
+                    className={`px-2 py-1 rounded text-[10px] font-medium transition-all ${
+                      attentionClassFilter === filter
+                        ? 'bg-[#8A1538] text-white shadow-sm'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    {filter === 'all' ? t('common.all') : filter === 'National' ? t('common.national') : t('common.council')}
+                  </button>
+                ))}
+                <ChartInfoToggle description="Lists projects with at-risk or critical status, showing their classification, budget, and open risk count. Click a project name to see full details." />
+              </div>
             </h3>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
