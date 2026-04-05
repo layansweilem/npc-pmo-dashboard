@@ -184,11 +184,11 @@ export function ExecutiveOverview() {
           hideLanguageToggle
         />
         
-        {/* Toggle Switch & Language - Top Right */}
-        <div className="absolute right-6 top-6 z-10 flex items-center gap-3">
+        {/* Language Toggle - Top Right */}
+        <div className="absolute right-6 top-6 z-10 flex flex-col items-end gap-2">
           <button
             onClick={toggleLanguage}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors bg-white"
             title={language === 'en' ? 'Switch to Arabic' : 'التبديل إلى الإنجليزية'}
           >
             <Languages className="w-4 h-4" style={{ color: '#8A1538' }} />
@@ -196,28 +196,32 @@ export function ExecutiveOverview() {
               {language === 'en' ? 'العربية' : 'English'}
             </span>
           </button>
-          <div className="inline-flex items-center bg-white border-2 border-gray-200 rounded-lg p-1 shadow-sm">
-            <button
-              onClick={() => setViewMode('portfolio')}
-              className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
-                viewMode === 'portfolio'
-                  ? 'bg-gradient-to-r from-[#8A1538] to-[#a91d47] text-white shadow-md'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              Portfolio View
-            </button>
-            <button
-              onClick={() => setViewMode('milestone')}
-              className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
-                viewMode === 'milestone'
-                  ? 'bg-gradient-to-r from-[#8A1538] to-[#a91d47] text-white shadow-md'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              Milestone View
-            </button>
-          </div>
+        </div>
+      </div>
+
+      {/* Portfolio / Milestone View Tabs */}
+      <div className="bg-white border-b border-gray-200 px-8">
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setViewMode('portfolio')}
+            className={`px-5 py-3 text-sm font-semibold transition-all duration-200 border-b-2 ${
+              viewMode === 'portfolio'
+                ? 'border-[#8A1538] text-[#8A1538]'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Portfolio View
+          </button>
+          <button
+            onClick={() => setViewMode('milestone')}
+            className={`px-5 py-3 text-sm font-semibold transition-all duration-200 border-b-2 ${
+              viewMode === 'milestone'
+                ? 'border-[#8A1538] text-[#8A1538]'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Milestone View
+          </button>
         </div>
       </div>
       
