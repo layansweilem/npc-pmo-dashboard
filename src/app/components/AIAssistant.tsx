@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
-import { Bot, X, Send, Clock, FileText, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
+import { Bot, X, Send, Clock, FileText, Sparkles, Download, Loader2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { projects } from '../data/mockData';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 interface Message {
   id: string;
@@ -17,13 +19,6 @@ interface Memory {
   timestamp: Date;
 }
 
-interface Report {
-  id: string;
-  title: string;
-  type: 'portfolio' | 'risk' | 'budget' | 'performance';
-  generatedAt: Date;
-  summary: string;
-}
 
 export function AIAssistant() {
   const { t, language } = useLanguage();
@@ -42,6 +37,7 @@ export function AIAssistant() {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
+  const [downloadingPage, setDownloadingPage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Suggested questions
@@ -81,36 +77,96 @@ export function AIAssistant() {
     },
   ]);
 
-  // Sample auto-generated reports
-  const [reports] = useState<Report[]>([
+
+  const downloadablePages = [
     {
-      id: '1',
-      title: language === 'ar' ? 'تقرير صحة المحفظة الأسبوعي' : 'Weekly Portfolio Health Report',
-      type: 'portfolio',
-      generatedAt: new Date(),
-      summary: language === 'ar' 
-        ? '35 مشروع نشط، 65% على المسار، 3 مخاطر حرجة جديدة'
-        : '35 active projects, 65% on track, 3 new critical risks',
+      id: 'executive-overview',
+      path: '/',
+      titleEn: 'Executive Overview',
+      titleAr: 'نظرة عامة تنفيذية',
+      descEn: 'Portfolio health, financial performance, milestone delivery KPIs and charts',
+      descAr: 'صحة المحفظة، الأداء المالي، مؤشرات تسليم المعالم والرسوم البيانية',
+      icon: '📊',
     },
     {
-      id: '2',
-      title: language === 'ar' ? 'تحليل المخاطر والقضايا' : 'Risk & Issue Analysis',
-      type: 'risk',
-      generatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
-      summary: language === 'ar'
-        ? '47 خطر مفتوح، التركيز على قيود الموارد والتبعيات'
-        : '47 open risks, focus on resource constraints and dependencies',
+      id: 'portfolio-deep-dive',
+      path: '/portfolio-deep-dive',
+      titleEn: 'Portfolio Deep Dive',
+      titleAr: 'تحليل المحفظة المعمق',
+      descEn: 'Detailed project analysis, risk concentration, and classification breakdown',
+      descAr: 'تحليل تفصيلي للمشاريع، تركيز المخاطر، وتصنيف التوزيع',
+      icon: '🔍',
     },
     {
-      id: '3',
-      title: language === 'ar' ? 'تقرير الأداء المالي' : 'Financial Performance Report',
-      type: 'budget',
-      generatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-      summary: language === 'ar'
-        ? 'فرق الميزانية: +5.2 مليون دولار، متوسط CPI: 0.94'
-        : 'Budget variance: +$5.2M, Avg CPI: 0.94',
+      id: 'project-manager',
+      path: '/project-manager',
+      titleEn: 'Project Manager View',
+      titleAr: 'عرض مدير المشروع',
+      descEn: 'Project metrics, milestones, task-level blockers and dependency risks',
+      descAr: 'مقاييس المشروع، المعالم، عوائق المهام ومخاطر التبعيات',
+      icon: '👤',
     },
-  ]);
+    {
+      id: 'project-details',
+      path: '/project-details',
+      titleEn: 'Project Details',
+      titleAr: 'تفاصيل المشروع',
+      descEn: 'Task-level bottleneck identification with governance section',
+      descAr: 'تحديد اختناقات المهام مع قسم الحوكمة',
+      icon: '📋',
+    },
+  ];
+
+  const handleDownloadPDF = async (pageId: string) => {
+    setDownloadingPage(pageId);
+
+    try {
+      setIsOpen(false);
+
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      const mainContent = document.querySelector('main') || document.querySelector('#root');
+      if (!mainContent) {
+        throw new Error('Page content not found');
+      }
+
+      const canvas = await html2canvas(mainContent as HTMLElement, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#f9fafb',
+        scrollY: -window.scrollY,
+        windowHeight: document.documentElement.scrollHeight,
+        height: document.documentElement.scrollHeight,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+
+      const pdfWidth = 297;
+      const pdfHeight = (imgHeight * pdfWidth) / imgWidth;
+
+      const pdf = new jsPDF({
+        orientation: pdfHeight > pdfWidth ? 'portrait' : 'landscape',
+        unit: 'mm',
+        format: [pdfWidth, Math.min(pdfHeight, 5000)],
+      });
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+      const page = downloadablePages.find(p => p.id === pageId);
+      const fileName = `PMO_${page?.titleEn.replace(/\s+/g, '_') || pageId}_${new Date().toISOString().split('T')[0]}.pdf`;
+      pdf.save(fileName);
+
+      setIsOpen(true);
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      setIsOpen(true);
+    } finally {
+      setDownloadingPage(null);
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -256,14 +312,6 @@ export function AIAssistant() {
     }
   };
 
-  const getReportIcon = (type: Report['type']) => {
-    switch (type) {
-      case 'portfolio': return '📊';
-      case 'risk': return '⚠️';
-      case 'budget': return '💰';
-      case 'performance': return '📈';
-    }
-  };
 
   return (
     <>
@@ -472,37 +520,75 @@ export function AIAssistant() {
               {/* Reports Tab */}
               {activeTab === 'reports' && (
                 <div className="h-full overflow-y-auto p-6">
-                  <h4 className="font-semibold text-gray-900 mb-4">
-                    {language === 'ar' ? 'التقارير المُنشأة تلقائياً' : 'Auto-Generated Reports'}
+                  <h4 className="font-semibold text-gray-900 mb-1">
+                    {language === 'ar' ? 'تصدير الصفحات كـ PDF' : 'Export Pages as PDF'}
                   </h4>
+                  <p className="text-xs text-gray-500 mb-4">
+                    {language === 'ar'
+                      ? 'اختر أي صفحة لتنزيلها كملف PDF. انتقل إلى الصفحة أولاً ثم اضغط تنزيل.'
+                      : 'Select any page to download as a PDF file. Navigate to the page first, then click download.'}
+                  </p>
                   <div className="space-y-3">
-                    {reports.map((report) => (
-                      <div
-                        key={report.id}
-                        className="bg-white rounded-lg p-4 border-2 hover:border-[#8A1538] transition-all cursor-pointer"
-                        style={{ borderColor: '#E5E7EB' }}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className="text-2xl">{getReportIcon(report.type)}</div>
-                          <div className="flex-1">
-                            <h5 className="font-semibold text-gray-900">{report.title}</h5>
-                            <p className="text-sm text-gray-600 mt-1">{report.summary}</p>
-                            <div className="flex items-center gap-2 mt-2">
-                              <FileText className="w-4 h-4 text-gray-400" />
-                              <p className="text-xs text-gray-500">
-                                {language === 'ar' ? 'تم الإنشاء' : 'Generated'} {formatTime(report.generatedAt)}
+                    {downloadablePages.map((page) => {
+                      const isCurrentPage = window.location.pathname === page.path || 
+                        (page.path === '/' && window.location.pathname === '');
+                      return (
+                        <div
+                          key={page.id}
+                          className={`bg-white rounded-lg p-4 border-2 transition-all ${
+                            isCurrentPage ? 'border-[#8A1538]/30 bg-[#8A1538]/5' : 'border-gray-200'
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="text-2xl">{page.icon}</div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <h5 className="font-semibold text-gray-900">
+                                  {language === 'ar' ? page.titleAr : page.titleEn}
+                                </h5>
+                                {isCurrentPage && (
+                                  <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#8A1538]/10 text-[#8A1538]">
+                                    {language === 'ar' ? 'الصفحة الحالية' : 'Current Page'}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-sm text-gray-600 mt-1">
+                                {language === 'ar' ? page.descAr : page.descEn}
                               </p>
                             </div>
+                            <button
+                              onClick={() => {
+                                if (isCurrentPage) {
+                                  handleDownloadPDF(page.id);
+                                } else {
+                                  window.location.href = page.path;
+                                }
+                              }}
+                              disabled={downloadingPage === page.id}
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-white transition-all disabled:opacity-70"
+                              style={{ background: isCurrentPage ? '#8A1538' : '#6B7280' }}
+                            >
+                              {downloadingPage === page.id ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                  {language === 'ar' ? 'جاري...' : 'Exporting...'}
+                                </>
+                              ) : isCurrentPage ? (
+                                <>
+                                  <Download className="w-4 h-4" />
+                                  {language === 'ar' ? 'تنزيل PDF' : 'Download PDF'}
+                                </>
+                              ) : (
+                                <>
+                                  <FileText className="w-4 h-4" />
+                                  {language === 'ar' ? 'انتقل أولاً' : 'Go to Page'}
+                                </>
+                              )}
+                            </button>
                           </div>
-                          <button
-                            className="px-3 py-1 rounded text-sm font-medium text-white"
-                            style={{ background: '#8A1538' }}
-                          >
-                            {language === 'ar' ? 'عرض' : 'View'}
-                          </button>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
