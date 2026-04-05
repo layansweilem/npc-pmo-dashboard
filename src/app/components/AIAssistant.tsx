@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Bot, X, Send, Clock, FileText, Sparkles, Download, Loader2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { projects } from '../data/mockData';
-import html2canvas from 'html2canvas';
+import { projects, milestones, risks } from '../data/mockData';
 import { jsPDF } from 'jspdf';
 
 interface Message {
@@ -121,48 +120,304 @@ export function AIAssistant() {
     setDownloadingPage(pageId);
 
     try {
-      setIsOpen(false);
-
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      const mainContent = document.querySelector('main') || document.querySelector('#root');
-      if (!mainContent) {
-        throw new Error('Page content not found');
-      }
-
-      const canvas = await html2canvas(mainContent as HTMLElement, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#f9fafb',
-        scrollY: -window.scrollY,
-        windowHeight: document.documentElement.scrollHeight,
-        height: document.documentElement.scrollHeight,
-      });
-
-      const imgData = canvas.toDataURL('image/png');
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-
-      const pdfWidth = 297;
-      const pdfHeight = (imgHeight * pdfWidth) / imgWidth;
-
-      const pdf = new jsPDF({
-        orientation: pdfHeight > pdfWidth ? 'portrait' : 'landscape',
-        unit: 'mm',
-        format: [pdfWidth, Math.min(pdfHeight, 5000)],
-      });
-
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       const page = downloadablePages.find(p => p.id === pageId);
-      const fileName = `PMO_${page?.titleEn.replace(/\s+/g, '_') || pageId}_${new Date().toISOString().split('T')[0]}.pdf`;
-      pdf.save(fileName);
+      const title = page?.titleEn || 'PMO Report';
+      const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+      const pw = pdf.internal.pageSize.getWidth();
+      const ph = pdf.internal.pageSize.getHeight();
+      const margin = 15;
+      let y = margin;
 
-      setIsOpen(true);
+      const brandColor: [number, number, number] = [138, 21, 56];
+      const darkGray: [number, number, number] = [31, 41, 55];
+      const medGray: [number, number, number] = [107, 114, 128];
+      const lightBg: [number, number, number] = [243, 244, 246];
+
+      const addHeader = () => {
+        pdf.setFillColor(...brandColor);
+        pdf.rect(0, 0, pw, 25, 'F');
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(18);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('PMO Dashboard', margin, 12);
+        pdf.setFontSize(10);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text(title, margin, 19);
+        pdf.text(dateStr, pw - margin, 12, { align: 'right' });
+        pdf.text('Enterprise Portfolio', pw - margin, 19, { align: 'right' });
+        y = 35;
+      };
+
+      const addSectionTitle = (text: string) => {
+        if (y > ph - 30) { pdf.addPage(); addHeader(); }
+        pdf.setFillColor(...brandColor);
+        pdf.rect(margin, y, 3, 6, 'F');
+        pdf.setTextColor(...darkGray);
+        pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(text, margin + 6, y + 5);
+        y += 12;
+      };
+
+      const addKPI = (label: string, value: string, sub: string, x: number, w: number) => {
+        pdf.setFillColor(255, 255, 255);
+        pdf.setDrawColor(229, 231, 235);
+        pdf.roundedRect(x, y, w, 22, 2, 2, 'FD');
+        pdf.setTextColor(...medGray);
+        pdf.setFontSize(8);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text(label, x + 4, y + 6);
+        pdf.setTextColor(...darkGray);
+        pdf.setFontSize(16);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(value, x + 4, y + 15);
+        pdf.setTextColor(...medGray);
+        pdf.setFontSize(7);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text(sub, x + 4, y + 20);
+      };
+
+      const addTable = (headers: string[], rows: string[][], colWidths: number[]) => {
+        if (y > ph - 40) { pdf.addPage(); addHeader(); }
+        const tableWidth = colWidths.reduce((a, b) => a + b, 0);
+        const startX = margin;
+        pdf.setFillColor(...lightBg);
+        pdf.rect(startX, y, tableWidth, 8, 'F');
+        pdf.setTextColor(...darkGray);
+        pdf.setFontSize(7);
+        pdf.setFont('helvetica', 'bold');
+        let cx = startX;
+        headers.forEach((h, i) => {
+          pdf.text(h, cx + 2, y + 5.5);
+          cx += colWidths[i];
+        });
+        y += 8;
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(55, 65, 81);
+        rows.forEach((row) => {
+          if (y > ph - 15) { pdf.addPage(); addHeader(); }
+          cx = startX;
+          pdf.setDrawColor(243, 244, 246);
+          pdf.line(startX, y + 7, startX + tableWidth, y + 7);
+          row.forEach((cell, i) => {
+            pdf.text(cell, cx + 2, y + 5);
+            cx += colWidths[i];
+          });
+          y += 8;
+        });
+        y += 5;
+      };
+
+      const totalProjects = projects.length;
+      const onTrackCount = projects.filter(p => p.status === 'on-track').length;
+      const atRiskCount = projects.filter(p => p.status === 'at-risk').length;
+      const criticalCount = projects.filter(p => p.status === 'critical').length;
+      const completedCount = projects.filter(p => p.status === 'completed').length;
+      const avgConf = Math.round(projects.reduce((s, p) => s + p.deliveryConfidence, 0) / totalProjects);
+      const totalBudget = projects.reduce((s, p) => s + p.budget, 0);
+      const totalSpent = projects.reduce((s, p) => s + p.spent, 0);
+      const totalForecast = projects.reduce((s, p) => s + p.forecast, 0);
+      const avgSpi = (projects.reduce((s, p) => s + p.spi, 0) / totalProjects).toFixed(2);
+      const avgCpi = (projects.reduce((s, p) => s + p.cpi, 0) / totalProjects).toFixed(2);
+      const totalRisks = projects.reduce((s, p) => s + p.openRisks, 0);
+
+      if (pageId === 'executive-overview') {
+        addHeader();
+
+        addSectionTitle('PORTFOLIO HEALTH');
+        const kpiW = (pw - 2 * margin - 20) / 5;
+        addKPI('Portfolio Health %', `${Math.round(onTrackCount / totalProjects * 100)}%`, `${onTrackCount}/${totalProjects} on track`, margin, kpiW);
+        addKPI('Total Active Projects', `${totalProjects}`, 'across portfolio', margin + kpiW + 5, kpiW);
+        addKPI('On Track Projects %', `${Math.round(onTrackCount / totalProjects * 100)}%`, `${onTrackCount} projects`, margin + (kpiW + 5) * 2, kpiW);
+        addKPI('Critical Projects', `${criticalCount}`, 'immediate action', margin + (kpiW + 5) * 3, kpiW);
+        addKPI('Open Risks', `${totalRisks}`, `${atRiskCount} at risk + ${criticalCount} critical`, margin + (kpiW + 5) * 4, kpiW);
+        y += 27;
+
+        addSectionTitle('FINANCIAL PERFORMANCE');
+        addKPI('Portfolio SPI', avgSpi, 'Schedule performance', margin, kpiW);
+        addKPI('Portfolio CPI', avgCpi, 'Cost performance', margin + kpiW + 5, kpiW);
+        addKPI('Budget Variance', `$${((totalForecast - totalBudget) / 1e6).toFixed(1)}M`, 'Over budget', margin + (kpiW + 5) * 2, kpiW);
+        addKPI('Forecast Accuracy', '94%', '+2% vs last quarter', margin + (kpiW + 5) * 3, kpiW);
+        addKPI('Avg. Confidence', `${avgConf}%`, 'delivery confidence', margin + (kpiW + 5) * 4, kpiW);
+        y += 27;
+
+        addSectionTitle('MILESTONE DELIVERY');
+        const totalMs = milestones.length;
+        const msOnTrack = milestones.filter(m => m.status === 'on-track').length;
+        const msAtRisk = milestones.filter(m => m.status === 'at-risk').length;
+        const msDelayed = milestones.filter(m => m.status === 'delayed').length;
+        const msCompleted = milestones.filter(m => m.status === 'completed').length;
+        addKPI('Total Milestones', `${totalMs}`, 'across all projects', margin, kpiW);
+        addKPI('Milestones On Track', `${msOnTrack}`, `${Math.round(msOnTrack/totalMs*100)}% of total`, margin + kpiW + 5, kpiW);
+        addKPI('Milestones At Risk', `${msAtRisk}`, 'needs attention', margin + (kpiW + 5) * 2, kpiW);
+        addKPI('Milestones Delayed', `${msDelayed}`, 'past due date', margin + (kpiW + 5) * 3, kpiW);
+        addKPI('Completion %', `${Math.round(msCompleted/totalMs*100)}%`, `${msCompleted} completed`, margin + (kpiW + 5) * 4, kpiW);
+        y += 27;
+
+        addSectionTitle('TOP 5 OVER-BUDGET PROJECTS');
+        const overBudget = projects.filter(p => p.forecast > p.budget).sort((a, b) => (b.forecast - b.budget) - (a.forecast - a.budget)).slice(0, 5);
+        addTable(
+          ['Project', 'Classification', 'Budget', 'Forecast', 'Variance'],
+          overBudget.map(p => [
+            p.name,
+            p.classification.type,
+            `$${(p.budget / 1e6).toFixed(1)}M`,
+            `$${(p.forecast / 1e6).toFixed(1)}M`,
+            `+$${((p.forecast - p.budget) / 1e6).toFixed(1)}M`
+          ]),
+          [80, 30, 35, 35, 35]
+        );
+
+        addSectionTitle('TOP DELAYED PROJECTS');
+        const delayed = projects.filter(p => p.sv < 0).sort((a, b) => a.sv - b.sv).slice(0, 5);
+        addTable(
+          ['Project', 'Classification', 'Status', 'SPI', 'Delay (days)', 'PM'],
+          delayed.map(p => [
+            p.name,
+            p.classification.type,
+            p.status,
+            p.spi.toFixed(2),
+            `${Math.abs(p.sv)}d`,
+            p.projectManager.split(' ')[0]
+          ]),
+          [65, 30, 25, 20, 30, 40]
+        );
+
+        addSectionTitle('STATUS DISTRIBUTION');
+        addTable(
+          ['Status', 'Count', 'Percentage'],
+          [
+            ['On Track', `${onTrackCount}`, `${Math.round(onTrackCount/totalProjects*100)}%`],
+            ['At Risk', `${atRiskCount}`, `${Math.round(atRiskCount/totalProjects*100)}%`],
+            ['Critical', `${criticalCount}`, `${Math.round(criticalCount/totalProjects*100)}%`],
+            ['Completed', `${completedCount}`, `${Math.round(completedCount/totalProjects*100)}%`],
+          ],
+          [60, 40, 40]
+        );
+
+      } else if (pageId === 'portfolio-deep-dive') {
+        addHeader();
+
+        addSectionTitle('PORTFOLIO SUMMARY');
+        const kpiW = (pw - 2 * margin - 15) / 4;
+        addKPI('Total Projects', `${totalProjects}`, 'in portfolio', margin, kpiW);
+        addKPI('At Risk / Critical', `${atRiskCount + criticalCount}`, 'need attention', margin + kpiW + 5, kpiW);
+        addKPI('Total Budget', `$${(totalBudget / 1e6).toFixed(1)}M`, 'allocated', margin + (kpiW + 5) * 2, kpiW);
+        addKPI('Total Spent', `$${(totalSpent / 1e6).toFixed(1)}M`, `${Math.round(totalSpent/totalBudget*100)}% utilized`, margin + (kpiW + 5) * 3, kpiW);
+        y += 27;
+
+        addSectionTitle('ALL PROJECTS');
+        addTable(
+          ['Project', 'Type', 'Portfolio', 'Status', 'SPI', 'CPI', 'Budget', 'PM'],
+          projects.map(p => [
+            p.name.substring(0, 25),
+            p.classification.type,
+            p.portfolio.substring(0, 15),
+            p.status,
+            p.spi.toFixed(2),
+            p.cpi.toFixed(2),
+            `$${(p.budget / 1e6).toFixed(1)}M`,
+            p.projectManager.split(' ')[0]
+          ]),
+          [55, 22, 35, 22, 18, 18, 25, 30]
+        );
+
+        addSectionTitle('RISK SUMMARY');
+        const risksByImpact = risks.reduce((acc, r) => { acc[r.impact] = (acc[r.impact] || 0) + 1; return acc; }, {} as Record<string, number>);
+        addTable(
+          ['Impact Level', 'Count'],
+          Object.entries(risksByImpact).map(([k, v]) => [k, `${v}`]),
+          [80, 40]
+        );
+
+      } else if (pageId === 'project-manager') {
+        addHeader();
+
+        addSectionTitle('PROJECT MANAGER OVERVIEW');
+        const pmMap = projects.reduce((acc, p) => {
+          if (!acc[p.projectManager]) acc[p.projectManager] = [];
+          acc[p.projectManager].push(p);
+          return acc;
+        }, {} as Record<string, typeof projects>);
+
+        addTable(
+          ['Project Manager', 'Projects', 'On Track', 'At Risk', 'Critical', 'Avg SPI', 'Avg CPI'],
+          Object.entries(pmMap).map(([pm, pjs]) => [
+            pm,
+            `${pjs.length}`,
+            `${pjs.filter(p => p.status === 'on-track').length}`,
+            `${pjs.filter(p => p.status === 'at-risk').length}`,
+            `${pjs.filter(p => p.status === 'critical').length}`,
+            (pjs.reduce((s, p) => s + p.spi, 0) / pjs.length).toFixed(2),
+            (pjs.reduce((s, p) => s + p.cpi, 0) / pjs.length).toFixed(2),
+          ]),
+          [50, 25, 25, 25, 25, 25, 25]
+        );
+
+        addSectionTitle('ALL PROJECTS BY MANAGER');
+        addTable(
+          ['Project', 'Manager', 'Status', 'SPI', 'CPI', 'Confidence', 'Budget'],
+          projects.map(p => [
+            p.name.substring(0, 30),
+            p.projectManager,
+            p.status,
+            p.spi.toFixed(2),
+            p.cpi.toFixed(2),
+            `${p.deliveryConfidence}%`,
+            `$${(p.budget / 1e6).toFixed(1)}M`,
+          ]),
+          [55, 40, 22, 18, 18, 25, 25]
+        );
+
+      } else if (pageId === 'project-details') {
+        addHeader();
+
+        addSectionTitle('PROJECT DETAILS SUMMARY');
+        addTable(
+          ['Project', 'Type', 'Status', 'Progress', 'Tasks', 'Completed', 'Blocked', 'Risks'],
+          projects.map(p => [
+            p.name.substring(0, 28),
+            p.classification.type,
+            p.status,
+            `${p.progress}%`,
+            `${p.totalTasks}`,
+            `${p.completedTasks}`,
+            `${p.blockedTasks}`,
+            `${p.openRisks}`,
+          ]),
+          [55, 22, 22, 22, 20, 25, 22, 20]
+        );
+
+        addSectionTitle('MILESTONES');
+        addTable(
+          ['Milestone', 'Project', 'Due Date', 'Status', 'Critical Path'],
+          milestones.slice(0, 30).map(m => {
+            const proj = projects.find(p => p.id === m.projectId);
+            return [
+              m.name.substring(0, 35),
+              (proj?.name || 'Unknown').substring(0, 20),
+              new Date(m.dueDate).toLocaleDateString(),
+              m.status,
+              m.criticalPath ? 'Yes' : 'No',
+            ];
+          }),
+          [65, 45, 30, 25, 25]
+        );
+      }
+
+      pdf.setTextColor(...medGray);
+      pdf.setFontSize(7);
+      pdf.text(`Generated by PMO Dashboard on ${dateStr}`, margin, ph - 5);
+      pdf.text(`Page 1`, pw - margin, ph - 5, { align: 'right' });
+
+      const fileName = `PMO_${title.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+      pdf.save(fileName);
     } catch (error) {
-      console.error('PDF generation failed:', error);
-      setIsOpen(true);
+      console.error('PDF generation failed:', error instanceof Error ? error.message : error);
     } finally {
       setDownloadingPage(null);
     }
@@ -525,70 +780,46 @@ export function AIAssistant() {
                   </h4>
                   <p className="text-xs text-gray-500 mb-4">
                     {language === 'ar'
-                      ? 'اختر أي صفحة لتنزيلها كملف PDF. انتقل إلى الصفحة أولاً ثم اضغط تنزيل.'
-                      : 'Select any page to download as a PDF file. Navigate to the page first, then click download.'}
+                      ? 'اختر أي صفحة لتنزيلها كملف PDF يحتوي على جميع البيانات والمقاييس.'
+                      : 'Select any page to download as a PDF report with all data and metrics.'}
                   </p>
                   <div className="space-y-3">
-                    {downloadablePages.map((page) => {
-                      const isCurrentPage = window.location.pathname === page.path || 
-                        (page.path === '/' && window.location.pathname === '');
-                      return (
-                        <div
-                          key={page.id}
-                          className={`bg-white rounded-lg p-4 border-2 transition-all ${
-                            isCurrentPage ? 'border-[#8A1538]/30 bg-[#8A1538]/5' : 'border-gray-200'
-                          }`}
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className="text-2xl">{page.icon}</div>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <h5 className="font-semibold text-gray-900">
-                                  {language === 'ar' ? page.titleAr : page.titleEn}
-                                </h5>
-                                {isCurrentPage && (
-                                  <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#8A1538]/10 text-[#8A1538]">
-                                    {language === 'ar' ? 'الصفحة الحالية' : 'Current Page'}
-                                  </span>
-                                )}
-                              </div>
-                              <p className="text-sm text-gray-600 mt-1">
-                                {language === 'ar' ? page.descAr : page.descEn}
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => {
-                                if (isCurrentPage) {
-                                  handleDownloadPDF(page.id);
-                                } else {
-                                  window.location.href = page.path;
-                                }
-                              }}
-                              disabled={downloadingPage === page.id}
-                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-white transition-all disabled:opacity-70"
-                              style={{ background: isCurrentPage ? '#8A1538' : '#6B7280' }}
-                            >
-                              {downloadingPage === page.id ? (
-                                <>
-                                  <Loader2 className="w-4 h-4 animate-spin" />
-                                  {language === 'ar' ? 'جاري...' : 'Exporting...'}
-                                </>
-                              ) : isCurrentPage ? (
-                                <>
-                                  <Download className="w-4 h-4" />
-                                  {language === 'ar' ? 'تنزيل PDF' : 'Download PDF'}
-                                </>
-                              ) : (
-                                <>
-                                  <FileText className="w-4 h-4" />
-                                  {language === 'ar' ? 'انتقل أولاً' : 'Go to Page'}
-                                </>
-                              )}
-                            </button>
+                    {downloadablePages.map((page) => (
+                      <div
+                        key={page.id}
+                        className="bg-white rounded-lg p-4 border-2 border-gray-200 hover:border-[#8A1538]/30 transition-all"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="text-2xl">{page.icon}</div>
+                          <div className="flex-1">
+                            <h5 className="font-semibold text-gray-900">
+                              {language === 'ar' ? page.titleAr : page.titleEn}
+                            </h5>
+                            <p className="text-sm text-gray-600 mt-1">
+                              {language === 'ar' ? page.descAr : page.descEn}
+                            </p>
                           </div>
+                          <button
+                            onClick={() => handleDownloadPDF(page.id)}
+                            disabled={downloadingPage !== null}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-white transition-all disabled:opacity-70"
+                            style={{ background: '#8A1538' }}
+                          >
+                            {downloadingPage === page.id ? (
+                              <>
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                {language === 'ar' ? 'جاري...' : 'Exporting...'}
+                              </>
+                            ) : (
+                              <>
+                                <Download className="w-4 h-4" />
+                                {language === 'ar' ? 'تنزيل PDF' : 'Download PDF'}
+                              </>
+                            )}
+                          </button>
                         </div>
-                      );
-                    })}
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
