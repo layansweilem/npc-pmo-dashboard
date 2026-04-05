@@ -38,6 +38,15 @@ A comprehensive, enterprise-grade Portfolio Management Office (PMO) dashboard fo
 - Component Library: Design system showcase
 - **Interactive Filters:** All three drill-down pages (Portfolio Deep Dive, Project Manager, Project Details) have a shared FilterBar that filters by Portfolio, Program, Status, Project Manager, and Strategic Initiative. The `filterProjects` utility in `FilterBar.tsx` handles filtering logic centrally. Empty filter results show a clear empty-state message.
 
+## Visual Design System
+- **DashboardHeader**: Gradient background (`from-[#8A1538] via-[#a91d47]`), white text, localized date/time "Last Updated" display, language-aware (en-US/ar-SA)
+- **KPI Cards**: White cards with colored left accent borders (3px), icon circles with soft-colored backgrounds, shadow-sm with hover:shadow-md, auto-fit responsive grid
+- **Section Headers**: Brand-colored pill indicators (rounded-full bg-[#8A1538]) with uppercase tracking-wider labels
+- **Chart Cards**: `rounded-xl border-gray-200/80 shadow-sm p-5` — elevated premium look
+- **Table Headers**: Gradient bg (`from-gray-50 to-gray-100/50`), uppercase tracking-wider, wrapped in `rounded-lg border border-gray-100`
+- **Page Background**: `bg-gray-50/50` on content areas to make white cards pop
+- **Brand Color**: `#8A1538` (maroon) used consistently for accents, gradients, and active states
+
 ## Governance & Classification Features
 The data model includes governance metadata for each project:
 - **Stakeholders**: Internal and external stakeholder lists per project

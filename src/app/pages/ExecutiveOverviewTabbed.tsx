@@ -7,7 +7,7 @@ import {
   Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell 
 } from 'recharts';
 import { Link } from 'react-router';
-import { AlertTriangle, TrendingUp, DollarSign, Target, Flag, CheckCircle2, Filter, Info, Languages, LayoutDashboard, CalendarCheck } from 'lucide-react';
+import { AlertTriangle, TrendingUp, DollarSign, Target, Flag, CheckCircle2, Filter, Info, LayoutDashboard, CalendarCheck } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MilestoneView } from './MilestoneView';
@@ -15,7 +15,7 @@ import { InfoTooltip } from '../components/InfoTooltip';
 import { ChartInfoToggle } from '../components/ChartInfoToggle';
 
 export function ExecutiveOverview() {
-  const { t, language, toggleLanguage } = useLanguage();
+  const { t } = useLanguage();
   const [viewMode, setViewMode] = useState<'portfolio' | 'milestone'>('portfolio');
   const [activeTab, setActiveTab] = useState<'performance' | 'cycle' | 'department'>('performance');
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
@@ -178,30 +178,13 @@ export function ExecutiveOverview() {
   
   return (
     <div className="flex flex-col h-full">
-      <div className="relative">
-        <DashboardHeader 
-          title={t('exec.title')}
-          subtitle={t('exec.subtitle')}
-          hideLanguageToggle
-        />
-        
-        {/* Language Toggle - Top Right */}
-        <div className="absolute right-6 top-6 z-10 flex flex-col items-end gap-2">
-          <button
-            onClick={toggleLanguage}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors bg-white"
-            title={language === 'en' ? 'Switch to Arabic' : 'التبديل إلى الإنجليزية'}
-          >
-            <Languages className="w-4 h-4" style={{ color: '#8A1538' }} />
-            <span className="text-sm font-medium text-gray-700">
-              {language === 'en' ? 'العربية' : 'English'}
-            </span>
-          </button>
-        </div>
-      </div>
+      <DashboardHeader 
+        title={t('exec.title')}
+        subtitle={t('exec.subtitle')}
+      />
 
       {/* Portfolio / Milestone View Tabs */}
-      <div className="bg-gradient-to-r from-gray-50 to-white border-b border-gray-200 px-8 py-2">
+      <div className="bg-white border-b border-gray-200 px-8 py-2 shadow-sm">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setViewMode('portfolio')}
@@ -238,9 +221,9 @@ export function ExecutiveOverview() {
           }`}
         >
           {/* Scrollable wrapper for Portfolio View */}
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto p-6 bg-gray-50/50">
             {/* Grouped Multi-Row KPI Container */}
-            <div className="mb-4 flex-shrink-0 bg-gray-50 rounded-lg border border-gray-200 p-3">
+            <div className="mb-5 flex-shrink-0 bg-white rounded-xl border border-gray-200/80 shadow-sm p-4">
             
             {/* Interactive Filters */}
             {(selectedStatus || selectedDepartment) && (
@@ -278,10 +261,11 @@ export function ExecutiveOverview() {
             )}
             
             {/* Portfolio Health Group */}
-            <div className="mb-3">
-              <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5 pb-0.5 border-b-2 border-[#8A1538]">
-                Portfolio Health
-              </h3>
+            <div className="mb-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-1 h-4 rounded-full bg-[#8A1538]"></div>
+                <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider">Portfolio Health</h3>
+              </div>
               <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-1.5">
                 <div className="bg-white rounded-lg border-l-[3px] border-l-[#8A1538] border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
                   <div className="flex items-center gap-2">
@@ -431,10 +415,11 @@ export function ExecutiveOverview() {
             </div>
 
             {/* Financial Performance Group */}
-            <div className="mb-3">
-              <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5 pb-0.5 border-b-2 border-[#8A1538]">
-                Financial Performance
-              </h3>
+            <div className="mb-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-1 h-4 rounded-full bg-[#8A1538]"></div>
+                <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider">Financial Performance</h3>
+              </div>
               <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-1.5">
                 <div className={`bg-white rounded-lg border-l-[3px] ${Number(avgSPI) >= 1 ? 'border-l-green-500' : Number(avgSPI) >= 0.85 ? 'border-l-amber-500' : 'border-l-red-500'} border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow`}>
                   <div className="flex items-center gap-2">
@@ -558,9 +543,10 @@ export function ExecutiveOverview() {
 
             {/* Milestone Delivery Group */}
             <div>
-              <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5 pb-0.5 border-b-2 border-[#8A1538]">
-                Milestone Delivery
-              </h3>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-1 h-4 rounded-full bg-[#8A1538]"></div>
+                <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider">Milestone Delivery</h3>
+              </div>
               <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-1.5">
                 <div className="bg-white rounded-lg border-l-[3px] border-l-[#8A1538] border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
                   <div className="flex items-center gap-2">
@@ -713,7 +699,7 @@ export function ExecutiveOverview() {
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex gap-2 mb-4 flex-shrink-0 bg-gray-50 rounded-lg p-1.5 border border-gray-200">
+          <div className="flex gap-2 mb-5 flex-shrink-0 bg-white rounded-xl p-1.5 border border-gray-200/80 shadow-sm">
             <button
               onClick={() => setActiveTab('performance')}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
@@ -752,11 +738,11 @@ export function ExecutiveOverview() {
           {/* Tab Content - Scrollable */}
           <div className="flex-1 overflow-y-auto">
             {activeTab === 'performance' && (
-              <div className="flex flex-col gap-4 p-4 pb-6">
+              <div className="flex flex-col gap-5 p-4 pb-6">
                 {/* Performance Charts Grid */}
                 <div className="grid grid-cols-3 gap-4" style={{ height: '280px' }}>
                   {/* Status Distribution */}
-                  <div className="bg-white rounded-lg border border-gray-200 p-4 h-full flex flex-col">
+                  <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 h-full flex flex-col">
                     <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Status Distribution <ChartInfoToggle description="Shows the breakdown of all projects by their current status (On Track, At Risk, Critical, Completed). Helps identify the overall health of the portfolio at a glance." /></h3>
                     <div className="flex-1" style={{ minHeight: 0 }}>
                       <ResponsiveContainer width="100%" height="100%">
@@ -782,7 +768,7 @@ export function ExecutiveOverview() {
                   </div>
 
                   {/* SPI & CPI Trend */}
-                  <div className="bg-white rounded-lg border border-gray-200 p-4 h-full flex flex-col">
+                  <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 h-full flex flex-col">
                     <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">SPI & CPI Trend (6 Months) <ChartInfoToggle description="Tracks Schedule Performance Index (SPI) and Cost Performance Index (CPI) over the last 6 months. Values above 1.0 indicate ahead of schedule/under budget; below 1.0 means behind schedule/over budget." /></h3>
                     <div className="flex-1" style={{ minHeight: 0 }}>
                       <ResponsiveContainer width="100%" height="100%">
@@ -833,7 +819,7 @@ export function ExecutiveOverview() {
                   </div>
 
                   {/* Strategic Alignment */}
-                  <div className="bg-white rounded-lg border border-gray-200 p-4 h-full flex flex-col">
+                  <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 h-full flex flex-col">
                     <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Strategic Alignment % <ChartInfoToggle description="Measures how well the portfolio aligns with each strategic initiative. Higher percentages indicate stronger alignment between projects and organizational goals." /></h3>
                     <div className="flex-1" style={{ minHeight: 0 }}>
                       <ResponsiveContainer width="100%" height="100%">
@@ -865,16 +851,16 @@ export function ExecutiveOverview() {
                 {/* Tables Row */}
                 <div className="grid grid-cols-2 gap-4 flex-shrink-0">
                   {/* Top 5 Over-Budget Projects */}
-                  <div className="bg-white rounded-lg border border-gray-200 p-4">
+                  <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5">
                     <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Top 5 Over-Budget Projects <ChartInfoToggle description="Lists the top 5 projects with the largest budget overruns, showing budget vs forecast variance. These projects need immediate financial review." /></h3>
-                    <div className="overflow-hidden">
+                    <div className="overflow-hidden rounded-lg border border-gray-100">
                       <table className="w-full text-xs">
                         <thead>
-                          <tr className="border-b border-gray-200">
-                            <th className="text-left py-2 font-medium text-gray-600">Project</th>
-                            <th className="text-right py-2 font-medium text-gray-600">Budget</th>
-                            <th className="text-right py-2 font-medium text-gray-600">Forecast</th>
-                            <th className="text-right py-2 font-medium text-gray-600">Variance</th>
+                          <tr className="bg-gradient-to-r from-gray-50 to-gray-100/50">
+                            <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Project</th>
+                            <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Budget</th>
+                            <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Forecast</th>
+                            <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Variance</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -916,17 +902,17 @@ export function ExecutiveOverview() {
                   </div>
 
                   {/* Top 5 Delayed Projects */}
-                  <div className="bg-white rounded-lg border border-gray-200 p-4">
+                  <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5">
                     <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Top 5 Delayed Projects <ChartInfoToggle description="Lists the top 5 projects with the most schedule delays based on SPI. Lower SPI indicates greater schedule slippage requiring corrective action." /></h3>
-                    <div className="overflow-hidden">
+                    <div className="overflow-hidden rounded-lg border border-gray-100">
                       <table className="w-full text-xs">
                         <thead>
-                          <tr className="border-b border-gray-200">
-                            <th className="text-left py-2 font-medium text-gray-600">Project</th>
-                            <th className="text-center py-2 font-medium text-gray-600">Status</th>
-                            <th className="text-right py-2 font-medium text-gray-600">SPI</th>
-                            <th className="text-right py-2 font-medium text-gray-600">Delay</th>
-                            <th className="text-right py-2 font-medium text-gray-600">PM</th>
+                          <tr className="bg-gradient-to-r from-gray-50 to-gray-100/50">
+                            <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Project</th>
+                            <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Status</th>
+                            <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">SPI</th>
+                            <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Delay</th>
+                            <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">PM</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -974,11 +960,11 @@ export function ExecutiveOverview() {
             )}
 
             {activeTab === 'cycle' && (
-              <div className="flex flex-col gap-4 p-4 pb-6">
+              <div className="flex flex-col gap-5 p-4 pb-6">
                 {/* PMO Cycle Charts Grid */}
                 <div className="grid grid-cols-3 gap-4" style={{ height: '400px' }}>
                   {/* PMO Stage Distribution */}
-                  <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col col-span-2">
+                  <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 flex flex-col col-span-2">
                     <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">PMO Cycle Stage Distribution <ChartInfoToggle description="Shows milestone distribution across PMO lifecycle stages (Initiation through Closure). Each bar is stacked by status: Completed, On Track, and At Risk." /></h3>
                     <div className="flex-1 min-h-0">
                       <ResponsiveContainer width="100%" height="100%">
@@ -1018,7 +1004,7 @@ export function ExecutiveOverview() {
                   </div>
 
                   {/* Milestone Status Summary */}
-                  <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col">
+                  <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 flex flex-col">
                     <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Milestone Status Summary <ChartInfoToggle description="Quick overview of milestone counts by status: Completed, On Track, At Risk, and Delayed. Provides an at-a-glance view of delivery health." /></h3>
                     <div className="flex-1 flex flex-col justify-center space-y-4">
                       <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
@@ -1042,18 +1028,18 @@ export function ExecutiveOverview() {
                 </div>
 
                 {/* Stage Details Table */}
-                <div className="bg-white rounded-lg border border-gray-200 p-4 flex-shrink-0">
+                <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 flex-shrink-0">
                   <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">PMO Stage Breakdown <ChartInfoToggle description="Detailed table showing milestone health per PMO stage, including completed, on track, and at risk counts with health percentage." /></h3>
-                  <div className="overflow-hidden">
+                  <div className="overflow-hidden rounded-lg border border-gray-100">
                     <table className="w-full text-xs">
                       <thead>
-                        <tr className="border-b border-gray-200">
-                          <th className="text-left py-2 font-medium text-gray-600">Stage</th>
-                          <th className="text-center py-2 font-medium text-gray-600">Total Milestones</th>
-                          <th className="text-center py-2 font-medium text-gray-600">Completed</th>
-                          <th className="text-center py-2 font-medium text-gray-600">On Track</th>
-                          <th className="text-center py-2 font-medium text-gray-600">At Risk</th>
-                          <th className="text-right py-2 font-medium text-gray-600">Health %</th>
+                        <tr className="bg-gradient-to-r from-gray-50 to-gray-100/50">
+                          <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Stage</th>
+                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Total</th>
+                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Completed</th>
+                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">On Track</th>
+                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">At Risk</th>
+                          <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Health %</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1091,11 +1077,11 @@ export function ExecutiveOverview() {
             )}
 
             {activeTab === 'department' && (
-              <div className="flex flex-col gap-4 p-4 pb-6">
+              <div className="flex flex-col gap-5 p-4 pb-6">
                 {/* Department Charts Grid */}
                 <div className="grid grid-cols-2 gap-4" style={{ height: '400px' }}>
                   {/* Department Health Status */}
-                  <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col">
+                  <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 flex flex-col">
                     <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Department Health Status <ChartInfoToggle description="Stacked bar chart showing project status distribution per department. Identifies which departments have the most critical or at-risk projects." /></h3>
                     <div className="flex-1 min-h-0">
                       <ResponsiveContainer width="100%" height="100%">
@@ -1135,7 +1121,7 @@ export function ExecutiveOverview() {
                   </div>
 
                   {/* Department Budget Utilization */}
-                  <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col">
+                  <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 flex flex-col">
                     <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Department Budget Utilization ($M) <ChartInfoToggle description="Compares allocated budget vs actual spend for each department. Helps identify departments that are overspending or underspending their budgets." /></h3>
                     <div className="flex-1 min-h-0">
                       <ResponsiveContainer width="100%" height="100%">
@@ -1171,20 +1157,20 @@ export function ExecutiveOverview() {
                 </div>
 
                 {/* Department Details Table */}
-                <div className="bg-white rounded-lg border border-gray-200 p-4 flex-shrink-0">
+                <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 flex-shrink-0">
                   <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Department Portfolio Summary <ChartInfoToggle description="Comprehensive table with project counts, status breakdown, budget allocation, spend, and health percentage for each department." /></h3>
-                  <div className="overflow-hidden">
+                  <div className="overflow-hidden rounded-lg border border-gray-100">
                     <table className="w-full text-xs">
                       <thead>
-                        <tr className="border-b border-gray-200">
-                          <th className="text-left py-2 font-medium text-gray-600">Department</th>
-                          <th className="text-center py-2 font-medium text-gray-600">Total Projects</th>
-                          <th className="text-center py-2 font-medium text-gray-600">On Track</th>
-                          <th className="text-center py-2 font-medium text-gray-600">At Risk</th>
-                          <th className="text-center py-2 font-medium text-gray-600">Critical</th>
-                          <th className="text-right py-2 font-medium text-gray-600">Budget ($M)</th>
-                          <th className="text-right py-2 font-medium text-gray-600">Spent ($M)</th>
-                          <th className="text-right py-2 font-medium text-gray-600">Health %</th>
+                        <tr className="bg-gradient-to-r from-gray-50 to-gray-100/50">
+                          <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Department</th>
+                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Total</th>
+                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">On Track</th>
+                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">At Risk</th>
+                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Critical</th>
+                          <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Budget ($M)</th>
+                          <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Spent ($M)</th>
+                          <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Health %</th>
                         </tr>
                       </thead>
                       <tbody>
