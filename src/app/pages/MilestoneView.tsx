@@ -107,11 +107,11 @@ export function MilestoneView() {
       <div className="mb-4 flex-shrink-0 bg-gray-50 rounded-lg border border-gray-200 p-3">
         
         {/* Milestone Status Overview Group */}
-        <div className="mb-3">
+        <div className="mb-3 max-w-5xl">
           <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5 pb-0.5 border-b-2 border-[#8A1538]">
             Milestone Status Overview
           </h3>
-          <div className="grid grid-cols-6 gap-2">
+          <div className="grid grid-cols-6 gap-1.5">
             <div className="bg-white rounded border border-gray-200 p-2">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -277,11 +277,11 @@ export function MilestoneView() {
         </div>
 
         {/* Critical Path Health Group */}
-        <div className="mb-3">
+        <div className="mb-3 max-w-3xl">
           <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5 pb-0.5 border-b-2 border-[#8A1538]">
             Critical Path Health
           </h3>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-1.5">
             <div className="bg-white rounded border border-gray-200 p-2">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -368,11 +368,11 @@ export function MilestoneView() {
         </div>
 
         {/* Delivery Performance Group */}
-        <div>
+        <div className="max-w-5xl">
           <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5 pb-0.5 border-b-2 border-[#8A1538]">
             Delivery Performance
           </h3>
-          <div className="grid grid-cols-5 gap-2">
+          <div className="grid grid-cols-5 gap-1.5">
             <div className="bg-white rounded border border-gray-200 p-2">
               <div className="flex items-start justify-between">
                 <div className="flex-1">

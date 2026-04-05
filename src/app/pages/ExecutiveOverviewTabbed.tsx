@@ -278,11 +278,11 @@ export function ExecutiveOverview() {
             )}
             
             {/* Portfolio Health Group */}
-            <div className="mb-3">
+            <div className="mb-3 max-w-5xl">
               <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5 pb-0.5 border-b-2 border-[#8A1538]">
                 Portfolio Health
               </h3>
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-5 gap-1.5">
                 <div className="bg-white rounded border border-gray-200 p-[8px]">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -421,11 +421,11 @@ export function ExecutiveOverview() {
             </div>
 
             {/* Financial Performance Group */}
-            <div className="mb-3">
+            <div className="mb-3 max-w-4xl">
               <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5 pb-0.5 border-b-2 border-[#8A1538]">
                 Financial Performance
               </h3>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-4 gap-1.5">
                 <div className="bg-white rounded border border-gray-200 p-2">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -547,11 +547,11 @@ export function ExecutiveOverview() {
             </div>
 
             {/* Milestone Delivery Group */}
-            <div>
+            <div className="max-w-5xl">
               <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5 pb-0.5 border-b-2 border-[#8A1538]">
                 Milestone Delivery
               </h3>
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-5 gap-1.5">
                 <div className="bg-white rounded border border-gray-200 p-2">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
