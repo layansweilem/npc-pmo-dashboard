@@ -107,11 +107,11 @@ export function MilestoneView() {
       <div className="mb-4 flex-shrink-0 bg-gray-50 rounded-lg border border-gray-200 p-3">
         
         {/* Milestone Status Overview Group */}
-        <div className="mb-3 max-w-5xl">
+        <div className="mb-3">
           <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5 pb-0.5 border-b-2 border-[#8A1538]">
             Milestone Status Overview
           </h3>
-          <div className="grid grid-cols-6 gap-1.5">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-1.5">
             <div className="bg-white rounded-lg border-l-[3px] border-l-[#8A1538] border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-[#8A1538]/10 flex items-center justify-center flex-shrink-0">
@@ -289,11 +289,11 @@ export function MilestoneView() {
         </div>
 
         {/* Critical Path Health Group */}
-        <div className="mb-3 max-w-3xl">
+        <div className="mb-3">
           <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5 pb-0.5 border-b-2 border-[#8A1538]">
             Critical Path Health
           </h3>
-          <div className="grid grid-cols-3 gap-1.5">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-1.5">
             <div className="bg-white rounded-lg border-l-[3px] border-l-[#8A1538] border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-[#8A1538]/10 flex items-center justify-center flex-shrink-0">
@@ -386,11 +386,11 @@ export function MilestoneView() {
         </div>
 
         {/* Delivery Performance Group */}
-        <div className="max-w-5xl">
+        <div>
           <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5 pb-0.5 border-b-2 border-[#8A1538]">
             Delivery Performance
           </h3>
-          <div className="grid grid-cols-5 gap-1.5">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-1.5">
             <div className="bg-white rounded-lg border-l-[3px] border-l-green-500 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
