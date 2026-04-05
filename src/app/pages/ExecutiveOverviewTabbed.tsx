@@ -7,7 +7,7 @@ import {
   Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell 
 } from 'recharts';
 import { Link } from 'react-router';
-import { AlertTriangle, TrendingUp, DollarSign, Target, Flag, CheckCircle2, Filter, Info, Languages } from 'lucide-react';
+import { AlertTriangle, TrendingUp, DollarSign, Target, Flag, CheckCircle2, Filter, Info, Languages, LayoutDashboard, CalendarCheck } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MilestoneView } from './MilestoneView';
@@ -200,26 +200,28 @@ export function ExecutiveOverview() {
       </div>
 
       {/* Portfolio / Milestone View Tabs */}
-      <div className="bg-white border-b border-gray-200 px-8">
-        <div className="flex items-center gap-1">
+      <div className="bg-gradient-to-r from-gray-50 to-white border-b border-gray-200 px-8 py-2">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setViewMode('portfolio')}
-            className={`px-5 py-3 text-sm font-semibold transition-all duration-200 border-b-2 ${
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
               viewMode === 'portfolio'
-                ? 'border-[#8A1538] text-[#8A1538]'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'bg-gradient-to-r from-[#8A1538] to-[#a91d47] text-white shadow-md shadow-[#8A1538]/20'
+                : 'bg-white text-gray-600 hover:text-gray-800 hover:bg-gray-100 border border-gray-200'
             }`}
           >
+            <LayoutDashboard className="w-4 h-4" />
             Portfolio View
           </button>
           <button
             onClick={() => setViewMode('milestone')}
-            className={`px-5 py-3 text-sm font-semibold transition-all duration-200 border-b-2 ${
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
               viewMode === 'milestone'
-                ? 'border-[#8A1538] text-[#8A1538]'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'bg-gradient-to-r from-[#8A1538] to-[#a91d47] text-white shadow-md shadow-[#8A1538]/20'
+                : 'bg-white text-gray-600 hover:text-gray-800 hover:bg-gray-100 border border-gray-200'
             }`}
           >
+            <CalendarCheck className="w-4 h-4" />
             Milestone View
           </button>
         </div>
