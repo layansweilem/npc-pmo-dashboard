@@ -112,11 +112,14 @@ export function MilestoneView() {
             Milestone Status Overview
           </h3>
           <div className="grid grid-cols-6 gap-1.5">
-            <div className="bg-white rounded border border-gray-200 p-2">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-1 mb-0.5">
-                    <p className="text-[10px] text-gray-600">Total Milestones</p>
+            <div className="bg-white rounded-lg border-l-[3px] border-l-[#8A1538] border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-[#8A1538]/10 flex items-center justify-center flex-shrink-0">
+                  <Flag className="w-4 h-4 text-[#8A1538]" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1">
+                    <p className="text-[10px] text-gray-500 font-medium">Total Milestones</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -132,18 +135,20 @@ export function MilestoneView() {
                       )}
                     </div>
                   </div>
-                  <p className="text-lg font-bold text-gray-900">{totalMilestones}</p>
-                  <p className="text-[9px] text-gray-500 mt-0.5">{criticalPathCount} critical path</p>
+                  <p className="text-xl font-bold text-gray-900 leading-tight">{totalMilestones}</p>
+                  <p className="text-[9px] text-gray-400">{criticalPathCount} critical path</p>
                 </div>
-                <Flag className="w-3 h-3 text-[#8A1538]" />
               </div>
             </div>
             
-            <div className="bg-white rounded border border-gray-200 p-2">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-1 mb-0.5">
-                    <p className="text-[10px] text-gray-600">Completed</p>
+            <div className="bg-white rounded-lg border-l-[3px] border-l-green-500 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 className="w-4 h-4 text-green-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1">
+                    <p className="text-[10px] text-gray-500 font-medium">Completed</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -159,18 +164,20 @@ export function MilestoneView() {
                       )}
                     </div>
                   </div>
-                  <p className="text-lg font-bold text-green-600">{milestonesCompleted}</p>
-                  <p className="text-[9px] text-gray-500 mt-0.5">{Math.round((milestonesCompleted / totalMilestones) * 100)}% of total</p>
+                  <p className="text-xl font-bold text-green-600 leading-tight">{milestonesCompleted}</p>
+                  <p className="text-[9px] text-gray-400">{Math.round((milestonesCompleted / totalMilestones) * 100)}% of total</p>
                 </div>
-                <CheckCircle2 className="w-3 h-3 text-green-600" />
               </div>
             </div>
             
-            <div className="bg-white rounded border border-gray-200 p-2">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-1 mb-0.5">
-                    <p className="text-[10px] text-gray-600">On Track</p>
+            <div className="bg-white rounded-lg border-l-[3px] border-l-blue-500 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1">
+                    <p className="text-[10px] text-gray-500 font-medium">On Track</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -186,18 +193,20 @@ export function MilestoneView() {
                       )}
                     </div>
                   </div>
-                  <p className="text-lg font-bold text-blue-600">{milestonesOnTrack}</p>
-                  <p className="text-[9px] text-gray-500 mt-0.5">{Math.round((milestonesOnTrack / totalMilestones) * 100)}% of total</p>
+                  <p className="text-xl font-bold text-blue-600 leading-tight">{milestonesOnTrack}</p>
+                  <p className="text-[9px] text-gray-400">{Math.round((milestonesOnTrack / totalMilestones) * 100)}% of total</p>
                 </div>
-                <CheckCircle2 className="w-3 h-3 text-blue-600" />
               </div>
             </div>
             
-            <div className="bg-white rounded border border-gray-200 p-2">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-1 mb-0.5">
-                    <p className="text-[10px] text-gray-600">At Risk</p>
+            <div className="bg-white rounded-lg border-l-[3px] border-l-amber-500 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle className="w-4 h-4 text-amber-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1">
+                    <p className="text-[10px] text-gray-500 font-medium">At Risk</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -213,18 +222,20 @@ export function MilestoneView() {
                       )}
                     </div>
                   </div>
-                  <p className="text-lg font-bold text-amber-600">{milestonesAtRisk}</p>
-                  <p className="text-[9px] text-gray-500 mt-0.5">{criticalPathAtRisk} critical path</p>
+                  <p className="text-xl font-bold text-amber-600 leading-tight">{milestonesAtRisk}</p>
+                  <p className="text-[9px] text-gray-400">{criticalPathAtRisk} critical path</p>
                 </div>
-                <AlertTriangle className="w-3 h-3 text-amber-600" />
               </div>
             </div>
             
-            <div className="bg-white rounded border border-gray-200 p-2">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-1 mb-0.5">
-                    <p className="text-[10px] text-gray-600">Delayed</p>
+            <div className="bg-white rounded-lg border-l-[3px] border-l-red-500 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
+                  <Clock className="w-4 h-4 text-red-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1">
+                    <p className="text-[10px] text-gray-500 font-medium">Delayed</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -240,18 +251,20 @@ export function MilestoneView() {
                       )}
                     </div>
                   </div>
-                  <p className="text-lg font-bold text-red-600">{milestonesDelayed}</p>
-                  <p className="text-[9px] text-gray-500 mt-0.5">requires action</p>
+                  <p className="text-xl font-bold text-red-600 leading-tight">{milestonesDelayed}</p>
+                  <p className="text-[9px] text-gray-400">requires action</p>
                 </div>
-                <Clock className="w-3 h-3 text-red-600" />
               </div>
             </div>
             
-            <div className="bg-white rounded border border-gray-200 p-2">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-1 mb-0.5">
-                    <p className="text-[10px] text-gray-600">Upcoming</p>
+            <div className="bg-white rounded-lg border-l-[3px] border-l-gray-400 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                  <Flag className="w-4 h-4 text-gray-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1">
+                    <p className="text-[10px] text-gray-500 font-medium">Upcoming</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -267,10 +280,9 @@ export function MilestoneView() {
                       )}
                     </div>
                   </div>
-                  <p className="text-lg font-bold text-gray-900">{milestonesUpcoming}</p>
-                  <p className="text-[9px] text-gray-500 mt-0.5">next 30 days</p>
+                  <p className="text-xl font-bold text-gray-900 leading-tight">{milestonesUpcoming}</p>
+                  <p className="text-[9px] text-gray-400">next 30 days</p>
                 </div>
-                <Flag className="w-3 h-3 text-gray-600" />
               </div>
             </div>
           </div>
@@ -282,11 +294,14 @@ export function MilestoneView() {
             Critical Path Health
           </h3>
           <div className="grid grid-cols-3 gap-1.5">
-            <div className="bg-white rounded border border-gray-200 p-2">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-1 mb-0.5">
-                    <p className="text-[10px] text-gray-600">Total Critical Path</p>
+            <div className="bg-white rounded-lg border-l-[3px] border-l-[#8A1538] border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-[#8A1538]/10 flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle className="w-4 h-4 text-[#8A1538]" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1">
+                    <p className="text-[10px] text-gray-500 font-medium">Total Critical Path</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -302,18 +317,20 @@ export function MilestoneView() {
                       )}
                     </div>
                   </div>
-                  <p className="text-lg font-bold text-gray-900">{criticalPathCount}</p>
-                  <p className="text-[9px] text-gray-500 mt-0.5">{Math.round((criticalPathCount / totalMilestones) * 100)}% of total</p>
+                  <p className="text-xl font-bold text-gray-900 leading-tight">{criticalPathCount}</p>
+                  <p className="text-[9px] text-gray-400">{Math.round((criticalPathCount / totalMilestones) * 100)}% of total</p>
                 </div>
-                <AlertTriangle className="w-3 h-3 text-[#8A1538]" />
               </div>
             </div>
             
-            <div className="bg-white rounded border border-gray-200 p-2">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-1 mb-0.5">
-                    <p className="text-[10px] text-gray-600">Critical Path On Track</p>
+            <div className="bg-white rounded-lg border-l-[3px] border-l-green-500 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 className="w-4 h-4 text-green-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1">
+                    <p className="text-[10px] text-gray-500 font-medium">Critical Path On Track</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -329,20 +346,22 @@ export function MilestoneView() {
                       )}
                     </div>
                   </div>
-                  <p className="text-lg font-bold text-green-600">{criticalPathCount - criticalPathAtRisk}</p>
-                  <p className="text-[9px] text-green-600 mt-0.5">
+                  <p className="text-xl font-bold text-green-600 leading-tight">{criticalPathCount - criticalPathAtRisk}</p>
+                  <p className="text-[9px] text-green-600">
                     {Math.round(((criticalPathCount - criticalPathAtRisk) / criticalPathCount) * 100)}% healthy
                   </p>
                 </div>
-                <CheckCircle2 className="w-3 h-3 text-green-600" />
               </div>
             </div>
             
-            <div className="bg-white rounded border border-gray-200 p-2">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-1 mb-0.5">
-                    <p className="text-[10px] text-gray-600">Critical Path At Risk</p>
+            <div className="bg-white rounded-lg border-l-[3px] border-l-red-500 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle className="w-4 h-4 text-red-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1">
+                    <p className="text-[10px] text-gray-500 font-medium">Critical Path At Risk</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -358,10 +377,9 @@ export function MilestoneView() {
                       )}
                     </div>
                   </div>
-                  <p className="text-lg font-bold text-red-600">{criticalPathAtRisk}</p>
-                  <p className="text-[9px] text-red-600 mt-0.5">immediate action</p>
+                  <p className="text-xl font-bold text-red-600 leading-tight">{criticalPathAtRisk}</p>
+                  <p className="text-[9px] text-red-600">immediate action</p>
                 </div>
-                <AlertTriangle className="w-3 h-3 text-red-600" />
               </div>
             </div>
           </div>
@@ -373,11 +391,14 @@ export function MilestoneView() {
             Delivery Performance
           </h3>
           <div className="grid grid-cols-5 gap-1.5">
-            <div className="bg-white rounded border border-gray-200 p-2">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-1 mb-0.5">
-                    <p className="text-[10px] text-gray-600">Completion Rate</p>
+            <div className="bg-white rounded-lg border-l-[3px] border-l-green-500 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+                  <TrendingUp className="w-4 h-4 text-green-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1">
+                    <p className="text-[10px] text-gray-500 font-medium">Completion Rate</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -393,18 +414,20 @@ export function MilestoneView() {
                       )}
                     </div>
                   </div>
-                  <p className="text-lg font-bold text-gray-900">{milestoneCompletionRate}%</p>
-                  <p className="text-[9px] text-green-600 mt-0.5">+3% vs last month</p>
+                  <p className="text-xl font-bold text-gray-900 leading-tight">{milestoneCompletionRate}%</p>
+                  <p className="text-[9px] text-green-600">+3% vs last month</p>
                 </div>
-                <TrendingUp className="w-3 h-3 text-green-600" />
               </div>
             </div>
             
-            <div className="bg-white rounded border border-gray-200 p-2">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-1 mb-0.5">
-                    <p className="text-[10px] text-gray-600">Planned YTD</p>
+            <div className="bg-white rounded-lg border-l-[3px] border-l-gray-400 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                  <Flag className="w-4 h-4 text-gray-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1">
+                    <p className="text-[10px] text-gray-500 font-medium">Planned YTD</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -420,18 +443,20 @@ export function MilestoneView() {
                       )}
                     </div>
                   </div>
-                  <p className="text-lg font-bold text-gray-900">115</p>
-                  <p className="text-[9px] text-gray-500 mt-0.5">total planned</p>
+                  <p className="text-xl font-bold text-gray-900 leading-tight">115</p>
+                  <p className="text-[9px] text-gray-400">total planned</p>
                 </div>
-                <Flag className="w-3 h-3 text-gray-600" />
               </div>
             </div>
             
-            <div className="bg-white rounded border border-gray-200 p-2">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-1 mb-0.5">
-                    <p className="text-[10px] text-gray-600">Actual YTD</p>
+            <div className="bg-white rounded-lg border-l-[3px] border-l-[#8A1538] border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-[#8A1538]/10 flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 className="w-4 h-4 text-[#8A1538]" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1">
+                    <p className="text-[10px] text-gray-500 font-medium">Actual YTD</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -447,18 +472,20 @@ export function MilestoneView() {
                       )}
                     </div>
                   </div>
-                  <p className="text-lg font-bold" style={{ color: '#8A1538' }}>105</p>
-                  <p className="text-[9px] text-amber-600 mt-0.5">91% of planned</p>
+                  <p className="text-xl font-bold leading-tight" style={{ color: '#8A1538' }}>105</p>
+                  <p className="text-[9px] text-amber-600">91% of planned</p>
                 </div>
-                <CheckCircle2 className="w-3 h-3" style={{ color: '#8A1538' }} />
               </div>
             </div>
             
-            <div className="bg-white rounded border border-gray-200 p-2">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-1 mb-0.5">
-                    <p className="text-[10px] text-gray-600">On-Time Delivery %</p>
+            <div className="bg-white rounded-lg border-l-[3px] border-l-green-500 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+                  <TrendingUp className="w-4 h-4 text-green-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1">
+                    <p className="text-[10px] text-gray-500 font-medium">On-Time Delivery %</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -474,18 +501,20 @@ export function MilestoneView() {
                       )}
                     </div>
                   </div>
-                  <p className="text-lg font-bold text-green-600">87%</p>
-                  <p className="text-[9px] text-green-600 mt-0.5">+5% improvement</p>
+                  <p className="text-xl font-bold text-green-600 leading-tight">87%</p>
+                  <p className="text-[9px] text-green-600">+5% improvement</p>
                 </div>
-                <TrendingUp className="w-3 h-3 text-green-600" />
               </div>
             </div>
             
-            <div className="bg-white rounded border border-gray-200 p-2">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-1 mb-0.5">
-                    <p className="text-[10px] text-gray-600">Average Delay (Days)</p>
+            <div className="bg-white rounded-lg border-l-[3px] border-l-amber-500 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
+                  <Clock className="w-4 h-4 text-amber-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1">
+                    <p className="text-[10px] text-gray-500 font-medium">Average Delay (Days)</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -501,10 +530,9 @@ export function MilestoneView() {
                       )}
                     </div>
                   </div>
-                  <p className="text-lg font-bold text-amber-600">8</p>
-                  <p className="text-[9px] text-gray-500 mt-0.5">for delayed items</p>
+                  <p className="text-xl font-bold text-amber-600 leading-tight">8</p>
+                  <p className="text-[9px] text-gray-400">for delayed items</p>
                 </div>
-                <Clock className="w-3 h-3 text-amber-600" />
               </div>
             </div>
           </div>

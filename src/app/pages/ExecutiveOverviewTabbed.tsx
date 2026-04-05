@@ -283,11 +283,14 @@ export function ExecutiveOverview() {
                 Portfolio Health
               </h3>
               <div className="grid grid-cols-5 gap-1.5">
-                <div className="bg-white rounded border border-gray-200 p-[8px]">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-1 mb-0.5">
-                        <p className="text-[10px] text-gray-600">Portfolio Health %</p>
+                <div className="bg-white rounded-lg border-l-[3px] border-l-[#8A1538] border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-[#8A1538]/10 flex items-center justify-center flex-shrink-0">
+                      <Target className="w-4 h-4 text-[#8A1538]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1">
+                        <p className="text-[10px] text-gray-500 font-medium">Portfolio Health %</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -303,18 +306,20 @@ export function ExecutiveOverview() {
                           )}
                         </div>
                       </div>
-                      <p className="text-lg font-bold text-gray-900">{Math.round((onTrack / totalProjects) * 100)}%</p>
-                      <p className="text-[9px] text-gray-500 mt-0.5">{onTrack}/{totalProjects} on track</p>
+                      <p className="text-xl font-bold text-gray-900 leading-tight">{Math.round((onTrack / totalProjects) * 100)}%</p>
+                      <p className="text-[9px] text-gray-400">{onTrack}/{totalProjects} on track</p>
                     </div>
-                    <Target className="w-3 h-3 text-[#8A1538]" />
                   </div>
                 </div>
                 
-                <div className="bg-white rounded border border-gray-200 p-2">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-1 mb-0.5">
-                        <p className="text-[10px] text-gray-600">Total Active Projects</p>
+                <div className="bg-white rounded-lg border-l-[3px] border-l-blue-500 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                      <TrendingUp className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1">
+                        <p className="text-[10px] text-gray-500 font-medium">Total Active Projects</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -330,18 +335,20 @@ export function ExecutiveOverview() {
                           )}
                         </div>
                       </div>
-                      <p className="text-lg font-bold text-gray-900">{totalProjects}</p>
-                      <p className="text-[9px] text-green-600 mt-0.5">+3 vs last quarter</p>
+                      <p className="text-xl font-bold text-gray-900 leading-tight">{totalProjects}</p>
+                      <p className="text-[9px] text-green-600">+3 vs last quarter</p>
                     </div>
-                    <TrendingUp className="w-3 h-3 text-green-600" />
                   </div>
                 </div>
                 
-                <div className="bg-white rounded border border-gray-200 p-2">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-1 mb-0.5">
-                        <p className="text-[10px] text-gray-600">On Track Projects %</p>
+                <div className="bg-white rounded-lg border-l-[3px] border-l-green-500 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="w-4 h-4 text-green-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1">
+                        <p className="text-[10px] text-gray-500 font-medium">On Track Projects %</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -357,18 +364,20 @@ export function ExecutiveOverview() {
                           )}
                         </div>
                       </div>
-                      <p className="text-lg font-bold text-green-600">{Math.round((onTrack / totalProjects) * 100)}%</p>
-                      <p className="text-[9px] text-gray-500 mt-0.5">{onTrack} projects</p>
+                      <p className="text-xl font-bold text-green-600 leading-tight">{Math.round((onTrack / totalProjects) * 100)}%</p>
+                      <p className="text-[9px] text-gray-400">{onTrack} projects</p>
                     </div>
-                    <CheckCircle2 className="w-3 h-3 text-green-600" />
                   </div>
                 </div>
                 
-                <div className="bg-white rounded border border-gray-200 p-2">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-1 mb-0.5">
-                        <p className="text-[10px] text-gray-600">Critical Projects</p>
+                <div className="bg-white rounded-lg border-l-[3px] border-l-red-500 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
+                      <AlertTriangle className="w-4 h-4 text-red-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1">
+                        <p className="text-[10px] text-gray-500 font-medium">Critical Projects</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -384,18 +393,20 @@ export function ExecutiveOverview() {
                           )}
                         </div>
                       </div>
-                      <p className="text-lg font-bold text-red-600">{critical}</p>
-                      <p className="text-[9px] text-gray-500 mt-0.5">immediate action</p>
+                      <p className="text-xl font-bold text-red-600 leading-tight">{critical}</p>
+                      <p className="text-[9px] text-gray-400">immediate action</p>
                     </div>
-                    <AlertTriangle className="w-3 h-3 text-red-600" />
                   </div>
                 </div>
                 
-                <div className="bg-white rounded border border-gray-200 p-2">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-1 mb-0.5">
-                        <p className="text-[10px] text-gray-600">Open Risks</p>
+                <div className="bg-white rounded-lg border-l-[3px] border-l-amber-500 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
+                      <AlertTriangle className="w-4 h-4 text-amber-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1">
+                        <p className="text-[10px] text-gray-500 font-medium">Open Risks</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -411,10 +422,9 @@ export function ExecutiveOverview() {
                           )}
                         </div>
                       </div>
-                      <p className="text-lg font-bold text-amber-600">{atRisk + critical}</p>
-                      <p className="text-[9px] text-gray-500 mt-0.5">{atRisk} at risk + {critical} critical</p>
+                      <p className="text-xl font-bold text-amber-600 leading-tight">{atRisk + critical}</p>
+                      <p className="text-[9px] text-gray-400">{atRisk} at risk + {critical} critical</p>
                     </div>
-                    <AlertTriangle className="w-3 h-3 text-amber-600" />
                   </div>
                 </div>
               </div>
@@ -426,11 +436,14 @@ export function ExecutiveOverview() {
                 Financial Performance
               </h3>
               <div className="grid grid-cols-4 gap-1.5">
-                <div className="bg-white rounded border border-gray-200 p-2">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-1 mb-0.5">
-                        <p className="text-[10px] text-gray-600">Portfolio SPI</p>
+                <div className={`bg-white rounded-lg border-l-[3px] ${Number(avgSPI) >= 1 ? 'border-l-green-500' : Number(avgSPI) >= 0.85 ? 'border-l-amber-500' : 'border-l-red-500'} border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow`}>
+                  <div className="flex items-center gap-2">
+                    <div className={`w-8 h-8 rounded-lg ${Number(avgSPI) >= 1 ? 'bg-green-50' : Number(avgSPI) >= 0.85 ? 'bg-amber-50' : 'bg-red-50'} flex items-center justify-center flex-shrink-0`}>
+                      <TrendingUp className={`w-4 h-4 ${Number(avgSPI) >= 1 ? 'text-green-600' : Number(avgSPI) >= 0.85 ? 'text-amber-600' : 'text-red-600'}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1">
+                        <p className="text-[10px] text-gray-500 font-medium">Portfolio SPI</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -446,22 +459,20 @@ export function ExecutiveOverview() {
                           )}
                         </div>
                       </div>
-                      <p className={`text-lg font-bold ${
-                        Number(avgSPI) >= 1 ? 'text-green-600' : Number(avgSPI) >= 0.85 ? 'text-amber-600' : 'text-red-600'
-                      }`}>{avgSPI}</p>
-                      <p className="text-[9px] text-gray-500 mt-0.5">Schedule performance</p>
+                      <p className={`text-xl font-bold leading-tight ${Number(avgSPI) >= 1 ? 'text-green-600' : Number(avgSPI) >= 0.85 ? 'text-amber-600' : 'text-red-600'}`}>{avgSPI}</p>
+                      <p className="text-[9px] text-gray-400">Schedule performance</p>
                     </div>
-                    <TrendingUp className={`w-3 h-3 ${
-                      Number(avgSPI) >= 1 ? 'text-green-600' : Number(avgSPI) >= 0.85 ? 'text-amber-600' : 'text-red-600'
-                    }`} />
                   </div>
                 </div>
                 
-                <div className="bg-white rounded border border-gray-200 p-2">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-1 mb-0.5">
-                        <p className="text-[10px] text-gray-600">Portfolio CPI</p>
+                <div className={`bg-white rounded-lg border-l-[3px] ${Number(avgCPI) >= 1 ? 'border-l-green-500' : Number(avgCPI) >= 0.85 ? 'border-l-amber-500' : 'border-l-red-500'} border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow`}>
+                  <div className="flex items-center gap-2">
+                    <div className={`w-8 h-8 rounded-lg ${Number(avgCPI) >= 1 ? 'bg-green-50' : Number(avgCPI) >= 0.85 ? 'bg-amber-50' : 'bg-red-50'} flex items-center justify-center flex-shrink-0`}>
+                      <DollarSign className={`w-4 h-4 ${Number(avgCPI) >= 1 ? 'text-green-600' : Number(avgCPI) >= 0.85 ? 'text-amber-600' : 'text-red-600'}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1">
+                        <p className="text-[10px] text-gray-500 font-medium">Portfolio CPI</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -477,22 +488,20 @@ export function ExecutiveOverview() {
                           )}
                         </div>
                       </div>
-                      <p className={`text-lg font-bold ${
-                        Number(avgCPI) >= 1 ? 'text-green-600' : Number(avgCPI) >= 0.85 ? 'text-amber-600' : 'text-red-600'
-                      }`}>{avgCPI}</p>
-                      <p className="text-[9px] text-gray-500 mt-0.5">Cost performance</p>
+                      <p className={`text-xl font-bold leading-tight ${Number(avgCPI) >= 1 ? 'text-green-600' : Number(avgCPI) >= 0.85 ? 'text-amber-600' : 'text-red-600'}`}>{avgCPI}</p>
+                      <p className="text-[9px] text-gray-400">Cost performance</p>
                     </div>
-                    <DollarSign className={`w-3 h-3 ${
-                      Number(avgCPI) >= 1 ? 'text-green-600' : Number(avgCPI) >= 0.85 ? 'text-amber-600' : 'text-red-600'
-                    }`} />
                   </div>
                 </div>
                 
-                <div className="bg-white rounded border border-gray-200 p-2">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-1 mb-0.5">
-                        <p className="text-[10px] text-gray-600">Budget Variance</p>
+                <div className={`bg-white rounded-lg border-l-[3px] ${budgetVariance > 0 ? 'border-l-red-500' : 'border-l-green-500'} border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow`}>
+                  <div className="flex items-center gap-2">
+                    <div className={`w-8 h-8 rounded-lg ${budgetVariance > 0 ? 'bg-red-50' : 'bg-green-50'} flex items-center justify-center flex-shrink-0`}>
+                      <DollarSign className={`w-4 h-4 ${budgetVariance > 0 ? 'text-red-600' : 'text-green-600'}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1">
+                        <p className="text-[10px] text-gray-500 font-medium">Budget Variance</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -508,20 +517,22 @@ export function ExecutiveOverview() {
                           )}
                         </div>
                       </div>
-                      <p className={`text-lg font-bold ${budgetVariance > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                      <p className={`text-xl font-bold leading-tight ${budgetVariance > 0 ? 'text-red-600' : 'text-green-600'}`}>
                         ${(Math.abs(budgetVariance) / 1000000).toFixed(1)}M
                       </p>
-                      <p className="text-[9px] text-gray-500 mt-0.5">{budgetVariance > 0 ? 'Over' : 'Under'} budget</p>
+                      <p className="text-[9px] text-gray-400">{budgetVariance > 0 ? 'Over' : 'Under'} budget</p>
                     </div>
-                    <DollarSign className={`w-3 h-3 ${budgetVariance > 0 ? 'text-red-600' : 'text-green-600'}`} />
                   </div>
                 </div>
                 
-                <div className="bg-white rounded border border-gray-200 p-2">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-1 mb-0.5">
-                        <p className="text-[10px] text-gray-600">Forecast Accuracy</p>
+                <div className="bg-white rounded-lg border-l-[3px] border-l-[#8A1538] border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-[#8A1538]/10 flex items-center justify-center flex-shrink-0">
+                      <Target className="w-4 h-4 text-[#8A1538]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1">
+                        <p className="text-[10px] text-gray-500 font-medium">Forecast Accuracy</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -537,10 +548,9 @@ export function ExecutiveOverview() {
                           )}
                         </div>
                       </div>
-                      <p className="text-lg font-bold text-gray-900">94%</p>
-                      <p className="text-[9px] text-green-600 mt-0.5">+2% vs last quarter</p>
+                      <p className="text-xl font-bold text-gray-900 leading-tight">94%</p>
+                      <p className="text-[9px] text-green-600">+2% vs last quarter</p>
                     </div>
-                    <Target className="w-3 h-3 text-[#8A1538]" />
                   </div>
                 </div>
               </div>
@@ -552,11 +562,14 @@ export function ExecutiveOverview() {
                 Milestone Delivery
               </h3>
               <div className="grid grid-cols-5 gap-1.5">
-                <div className="bg-white rounded border border-gray-200 p-2">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-1 mb-0.5">
-                        <p className="text-[10px] text-gray-600">Total Milestones</p>
+                <div className="bg-white rounded-lg border-l-[3px] border-l-[#8A1538] border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-[#8A1538]/10 flex items-center justify-center flex-shrink-0">
+                      <Flag className="w-4 h-4 text-[#8A1538]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1">
+                        <p className="text-[10px] text-gray-500 font-medium">Total Milestones</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -572,18 +585,20 @@ export function ExecutiveOverview() {
                           )}
                         </div>
                       </div>
-                      <p className="text-lg font-bold text-gray-900">{totalMilestones}</p>
-                      <p className="text-[9px] text-gray-500 mt-0.5">across all projects</p>
+                      <p className="text-xl font-bold text-gray-900 leading-tight">{totalMilestones}</p>
+                      <p className="text-[9px] text-gray-400">across all projects</p>
                     </div>
-                    <Flag className="w-3 h-3 text-[#8A1538]" />
                   </div>
                 </div>
                 
-                <div className="bg-white rounded border border-gray-200 p-2">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-1 mb-0.5">
-                        <p className="text-[10px] text-gray-600">Milestones On Track</p>
+                <div className="bg-white rounded-lg border-l-[3px] border-l-blue-500 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1">
+                        <p className="text-[10px] text-gray-500 font-medium">Milestones On Track</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -599,18 +614,20 @@ export function ExecutiveOverview() {
                           )}
                         </div>
                       </div>
-                      <p className="text-lg font-bold text-blue-600">{milestonesOnTrack}</p>
-                      <p className="text-[9px] text-gray-500 mt-0.5">{Math.round((milestonesOnTrack / totalMilestones) * 100)}% of total</p>
+                      <p className="text-xl font-bold text-blue-600 leading-tight">{milestonesOnTrack}</p>
+                      <p className="text-[9px] text-gray-400">{Math.round((milestonesOnTrack / totalMilestones) * 100)}% of total</p>
                     </div>
-                    <CheckCircle2 className="w-3 h-3 text-blue-600" />
                   </div>
                 </div>
                 
-                <div className="bg-white rounded border border-gray-200 p-2">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-1 mb-0.5">
-                        <p className="text-[10px] text-gray-600">Milestones At Risk</p>
+                <div className="bg-white rounded-lg border-l-[3px] border-l-amber-500 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
+                      <AlertTriangle className="w-4 h-4 text-amber-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1">
+                        <p className="text-[10px] text-gray-500 font-medium">Milestones At Risk</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -626,18 +643,20 @@ export function ExecutiveOverview() {
                           )}
                         </div>
                       </div>
-                      <p className="text-lg font-bold text-amber-600">{milestonesAtRisk}</p>
-                      <p className="text-[9px] text-gray-500 mt-0.5">needs attention</p>
+                      <p className="text-xl font-bold text-amber-600 leading-tight">{milestonesAtRisk}</p>
+                      <p className="text-[9px] text-gray-400">needs attention</p>
                     </div>
-                    <AlertTriangle className="w-3 h-3 text-amber-600" />
                   </div>
                 </div>
                 
-                <div className="bg-white rounded border border-gray-200 p-2">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-1 mb-0.5">
-                        <p className="text-[10px] text-gray-600">Milestones Delayed</p>
+                <div className="bg-white rounded-lg border-l-[3px] border-l-red-500 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
+                      <AlertTriangle className="w-4 h-4 text-red-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1">
+                        <p className="text-[10px] text-gray-500 font-medium">Milestones Delayed</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -653,18 +672,20 @@ export function ExecutiveOverview() {
                           )}
                         </div>
                       </div>
-                      <p className="text-lg font-bold text-red-600">{milestonesDelayed}</p>
-                      <p className="text-[9px] text-gray-500 mt-0.5">past due date</p>
+                      <p className="text-xl font-bold text-red-600 leading-tight">{milestonesDelayed}</p>
+                      <p className="text-[9px] text-gray-400">past due date</p>
                     </div>
-                    <AlertTriangle className="w-3 h-3 text-red-600" />
                   </div>
                 </div>
                 
-                <div className="bg-white rounded border border-gray-200 p-2">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-1 mb-0.5">
-                        <p className="text-[10px] text-gray-600">Milestone Completion %</p>
+                <div className="bg-white rounded-lg border-l-[3px] border-l-green-500 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+                      <TrendingUp className="w-4 h-4 text-green-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1">
+                        <p className="text-[10px] text-gray-500 font-medium">Milestone Completion %</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -680,12 +701,11 @@ export function ExecutiveOverview() {
                           )}
                         </div>
                       </div>
-                      <p className="text-lg font-bold text-green-600">
+                      <p className="text-xl font-bold text-green-600 leading-tight">
                         {Math.round((milestonesCompleted / totalMilestones) * 100)}%
                       </p>
-                      <p className="text-[9px] text-gray-500 mt-0.5">{milestonesCompleted} completed</p>
+                      <p className="text-[9px] text-gray-400">{milestonesCompleted} completed</p>
                     </div>
-                    <TrendingUp className="w-3 h-3 text-green-600" />
                   </div>
                 </div>
               </div>
