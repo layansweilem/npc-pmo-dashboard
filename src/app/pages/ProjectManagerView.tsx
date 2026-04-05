@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { DashboardHeader } from '../components/DashboardHeader';
-import { FilterBar } from '../components/FilterBar';
+import { FilterBar, filterProjects, defaultFilterState, type FilterState } from '../components/FilterBar';
 import { KPICard } from '../components/KPICard';
 import { StatusBadge } from '../components/StatusBadge';
 import { projects } from '../data/mockData';
@@ -17,8 +17,11 @@ import { ChartInfoToggle } from '../components/ChartInfoToggle';
 
 export function ProjectManagerView() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [filters, setFilters] = useState<FilterState>(defaultFilterState);
+  const filteredProjects = filterProjects(projects, filters);
   const projectId = searchParams.get('id') || 'PRJ-004';
-  const selectedProject = projects.find(p => p.id === projectId) || projects[0];
+  const matchedProject = filteredProjects.find(p => p.id === projectId);
+  const selectedProject = matchedProject || filteredProjects[0];
 
   // Calculate progress data over time
   const progressData = [
@@ -86,20 +89,27 @@ export function ProjectManagerView() {
           { label: 'Project Manager View' },
         ]}
       />
-      <FilterBar />
+      <FilterBar filters={filters} setFilters={setFilters} />
       
       <div className="flex-1 overflow-auto p-4">
+        {filteredProjects.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <AlertCircle className="w-12 h-12 text-gray-300 mb-3" />
+            <p className="text-gray-500 font-medium mb-1">No projects match the selected filters</p>
+            <p className="text-gray-400 text-sm">Try adjusting or clearing the filters above</p>
+          </div>
+        ) : (<>
         {/* Compact Project Selector */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <label className="text-xs font-medium text-blue-900 mb-1 block">Select Project:</label>
               <select 
-                value={selectedProject.id}
+                value={selectedProject!.id}
                 onChange={(e) => setSearchParams({ id: e.target.value })}
                 className="px-3 py-1.5 border border-blue-300 rounded-lg bg-white text-gray-900 font-medium text-sm"
               >
-                {projects.map(p => (
+                {filteredProjects.map(p => (
                   <option key={p.id} value={p.id}>{p.name}</option>
                 ))}
               </select>
@@ -389,6 +399,7 @@ export function ProjectManagerView() {
             </table>
           </div>
         </div>
+        </>)}
       </div>
     </div>
   );

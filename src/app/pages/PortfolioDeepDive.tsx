@@ -1,5 +1,5 @@
 import { DashboardHeader } from '../components/DashboardHeader';
-import { FilterBar } from '../components/FilterBar';
+import { FilterBar, filterProjects, defaultFilterState, type FilterState } from '../components/FilterBar';
 import { projects, resourceUtilization } from '../data/mockData';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, 
@@ -17,13 +17,16 @@ export function PortfolioDeepDive() {
   const { t } = useLanguage();
   const [tooltipVisible, setTooltipVisible] = useState<string | null>(null);
   const [classificationFilter, setClassificationFilter] = useState<'all' | 'National' | 'Council'>('all');
+  const [filters, setFilters] = useState<FilterState>(defaultFilterState);
   
   const showTooltip = (id: string) => setTooltipVisible(id);
   const hideTooltip = () => setTooltipVisible(null);
 
+  const filteredByBar = filterProjects(projects, filters);
+
   const filteredByClassification = classificationFilter === 'all'
-    ? projects
-    : projects.filter(p => p.classification.type === classificationFilter);
+    ? filteredByBar
+    : filteredByBar.filter(p => p.classification.type === classificationFilter);
   
   // Simple status breakdown
   const statusBreakdown = [
@@ -78,7 +81,7 @@ export function PortfolioDeepDive() {
           { label: t('portfolio.title') },
         ]}
       />
-      <FilterBar />
+      <FilterBar filters={filters} setFilters={setFilters} />
       
       <div className="flex-1 overflow-auto p-4">
         {/* Classification Filter */}
@@ -98,7 +101,7 @@ export function PortfolioDeepDive() {
             >
               {filter === 'all' ? 'All Projects' : `${filter} Projects`}
               <span className="ml-1 opacity-75">
-                ({filter === 'all' ? projects.length : projects.filter(p => p.classification.type === filter).length})
+                ({filter === 'all' ? filteredByBar.length : filteredByBar.filter(p => p.classification.type === filter).length})
               </span>
             </button>
           ))}

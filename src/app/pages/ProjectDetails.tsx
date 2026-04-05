@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { DashboardHeader } from '../components/DashboardHeader';
+import { FilterBar, filterProjects, defaultFilterState, type FilterState } from '../components/FilterBar';
 import { StatusBadge } from '../components/StatusBadge';
 import { projects } from '../data/mockData';
 import { 
@@ -13,9 +14,12 @@ import {
 import { ChartInfoToggle } from '../components/ChartInfoToggle';
 
 export function ProjectDetails() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [filters, setFilters] = useState<FilterState>(defaultFilterState);
+  const filteredProjects = filterProjects(projects, filters);
   const projectId = searchParams.get('id') || 'PRJ-006';
-  const project = projects.find(p => p.id === projectId) || projects[0];
+  const matchedProject = filteredProjects.find(p => p.id === projectId);
+  const project = matchedProject || filteredProjects[0];
   const [tooltipVisible, setTooltipVisible] = useState<string | null>(null);
   
   const showTooltip = (id: string) => setTooltipVisible(id);
@@ -131,8 +135,43 @@ export function ProjectDetails() {
           { label: 'Project Details' },
         ]}
       />
+      <FilterBar filters={filters} setFilters={setFilters} />
       
       <div className="flex-1 overflow-auto p-4">
+        {filteredProjects.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <AlertCircle className="w-12 h-12 text-gray-300 mb-3" />
+            <p className="text-gray-500 font-medium mb-1">No projects match the selected filters</p>
+            <p className="text-gray-400 text-sm">Try adjusting or clearing the filters above</p>
+          </div>
+        ) : (<>
+        {/* Project Navigator */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+          <div className="flex items-center gap-4">
+            <div>
+              <label className="text-xs font-medium text-blue-900 mb-1 block">Select Project:</label>
+              <select
+                value={project!.id}
+                onChange={(e) => setSearchParams({ id: e.target.value })}
+                className="px-3 py-1.5 border border-blue-300 rounded-lg bg-white text-gray-900 font-medium text-sm"
+              >
+                {filteredProjects.map(p => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="ml-auto flex items-center gap-2">
+              <StatusBadge status={project.status} />
+              <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                project.classification.type === 'National' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+              }`}>
+                {project.classification.type}
+              </span>
+              <span className="text-xs text-gray-500">{filteredProjects.length} project{filteredProjects.length !== 1 ? 's' : ''} matching filters</span>
+            </div>
+          </div>
+        </div>
+
         {/* Compact Project Info Banner */}
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-2 mb-3">
           <div className="grid grid-cols-6 gap-2">
@@ -414,6 +453,7 @@ export function ProjectDetails() {
             </div>
           </div>
         </div>
+        </>)}
       </div>
     </div>
   );

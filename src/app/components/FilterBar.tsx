@@ -1,5 +1,5 @@
 import { Filter, X } from 'lucide-react';
-import { projects } from '../data/mockData';
+import { projects, type Project } from '../data/mockData';
 import { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -10,6 +10,34 @@ export interface FilterState {
   projectManager: string;
   strategicInitiative: string;
 }
+
+const statusMap: Record<string, string> = {
+  'On Track': 'on-track',
+  'At Risk': 'at-risk',
+  'Critical': 'critical',
+};
+
+export function filterProjects(allProjects: Project[], filters: FilterState): Project[] {
+  return allProjects.filter(p => {
+    if (filters.portfolio && p.portfolio !== filters.portfolio) return false;
+    if (filters.program && p.program !== filters.program) return false;
+    if (filters.status && filters.status !== 'All') {
+      const mappedStatus = statusMap[filters.status];
+      if (mappedStatus && p.status !== mappedStatus) return false;
+    }
+    if (filters.projectManager && p.projectManager !== filters.projectManager) return false;
+    if (filters.strategicInitiative && p.strategicInitiative !== filters.strategicInitiative) return false;
+    return true;
+  });
+}
+
+export const defaultFilterState: FilterState = {
+  portfolio: '',
+  program: '',
+  status: '',
+  projectManager: '',
+  strategicInitiative: '',
+};
 
 interface FilterBarProps {
   filters?: FilterState;
@@ -89,7 +117,8 @@ export function FilterBar({ filters: externalFilters, setFilters: externalSetFil
           className="px-3 py-2 border border-gray-300 rounded-md text-sm bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
           onChange={(e) => handleChange('status', e.target.value)}
         >
-          {statuses.map(s => (
+          <option value="">All</option>
+          {statuses.filter(s => s !== 'All').map(s => (
             <option key={s} value={s}>{s}</option>
           ))}
         </select>

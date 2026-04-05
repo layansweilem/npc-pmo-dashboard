@@ -36,6 +36,7 @@ A comprehensive, enterprise-grade Portfolio Management Office (PMO) dashboard fo
 - Project Manager View: Project metrics, milestones, task-level blockers with dependency risk indicators
 - Project Details View: Task-level bottleneck identification with governance section
 - Component Library: Design system showcase
+- **Interactive Filters:** All three drill-down pages (Portfolio Deep Dive, Project Manager, Project Details) have a shared FilterBar that filters by Portfolio, Program, Status, Project Manager, and Strategic Initiative. The `filterProjects` utility in `FilterBar.tsx` handles filtering logic centrally. Empty filter results show a clear empty-state message.
 
 ## Governance & Classification Features
 The data model includes governance metadata for each project:
