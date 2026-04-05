@@ -717,9 +717,9 @@ export function MilestoneView() {
         {activeTab === 'stage' && (
           <div className="h-full overflow-y-auto">
             <div className="flex flex-col gap-4 p-4">
-              <div className="grid grid-cols-2 gap-4" style={{ height: '320px' }}>
+              <div className="grid grid-cols-2 gap-4">
                 {/* PMO Cycle Stage Distribution */}
-                <div className="bg-white rounded-lg border border-gray-200 p-4 h-full flex flex-col">
+                <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col" style={{ height: '300px' }}>
                   <h3 className="font-semibold text-gray-900 mb-3 text-sm">PMO Cycle Stage Distribution</h3>
                   <div className="flex-1" style={{ minHeight: 0 }}>
                     <ResponsiveContainer width="100%" height="100%">
@@ -759,37 +759,35 @@ export function MilestoneView() {
                 </div>
 
                 {/* Stage Definitions */}
-                <div className="bg-white rounded-lg border border-gray-200 p-4 h-full flex flex-col">
+                <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col" style={{ height: '300px' }}>
                   <h3 className="font-semibold text-gray-900 mb-3 text-sm">PMO Stage Definitions</h3>
-                  <div className="flex-1 overflow-y-auto">
-                    <ul className="space-y-3">
-                      <li className="p-3 bg-blue-50 rounded">
-                        <span className="font-semibold text-blue-900">Initiation</span>
-                        <p className="text-xs text-blue-700 mt-1">Requirements gathering & project approval</p>
-                      </li>
-                      <li className="p-3 bg-purple-50 rounded">
-                        <span className="font-semibold text-purple-900">Planning</span>
-                        <p className="text-xs text-purple-700 mt-1">Design phase & resource allocation</p>
-                      </li>
-                      <li className="p-3 bg-green-50 rounded">
-                        <span className="font-semibold text-green-900">Execution</span>
-                        <p className="text-xs text-green-700 mt-1">Development & delivery phase</p>
-                      </li>
-                      <li className="p-3 bg-amber-50 rounded">
-                        <span className="font-semibold text-amber-900">Monitoring</span>
-                        <p className="text-xs text-amber-700 mt-1">Testing & validation phase</p>
-                      </li>
-                      <li className="p-3 bg-gray-50 rounded">
-                        <span className="font-semibold text-gray-900">Closure</span>
-                        <p className="text-xs text-gray-700 mt-1">Go-live & handover to operations</p>
-                      </li>
-                    </ul>
+                  <div className="flex-1 overflow-y-auto space-y-2">
+                    <div className="p-2.5 bg-blue-50 rounded">
+                      <span className="font-semibold text-blue-900 text-sm">Initiation</span>
+                      <p className="text-xs text-blue-700 mt-0.5">Requirements gathering & project approval</p>
+                    </div>
+                    <div className="p-2.5 bg-purple-50 rounded">
+                      <span className="font-semibold text-purple-900 text-sm">Planning</span>
+                      <p className="text-xs text-purple-700 mt-0.5">Design phase & resource allocation</p>
+                    </div>
+                    <div className="p-2.5 bg-green-50 rounded">
+                      <span className="font-semibold text-green-900 text-sm">Execution</span>
+                      <p className="text-xs text-green-700 mt-0.5">Development & delivery phase</p>
+                    </div>
+                    <div className="p-2.5 bg-amber-50 rounded">
+                      <span className="font-semibold text-amber-900 text-sm">Monitoring</span>
+                      <p className="text-xs text-amber-700 mt-0.5">Testing & validation phase</p>
+                    </div>
+                    <div className="p-2.5 bg-gray-100 rounded">
+                      <span className="font-semibold text-gray-900 text-sm">Closure</span>
+                      <p className="text-xs text-gray-700 mt-0.5">Go-live & handover to operations</p>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Stage Details Table */}
-              <div className="bg-white rounded-lg border border-gray-200 p-4 flex-shrink-0">
+              <div className="bg-white rounded-lg border border-gray-200 p-4">
                 <h3 className="font-semibold text-gray-900 mb-3 text-sm">PMO Stage Breakdown</h3>
                 <div className="overflow-hidden">
                   <table className="w-full text-xs">
@@ -842,38 +840,45 @@ export function MilestoneView() {
         {activeTab === 'risk' && (
           <div className="h-full overflow-y-auto">
             <div className="flex flex-col gap-4 p-4">
-              <div className="grid grid-cols-2 gap-4" style={{ height: '280px' }}>
+              <div className="grid grid-cols-2 gap-4">
                 {/* At Risk by Department */}
-                <div className="bg-white rounded-lg border border-gray-200 p-4 h-full flex flex-col">
+                <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col" style={{ height: '300px' }}>
                   <h3 className="font-semibold text-gray-900 mb-3 text-sm">At Risk by Department</h3>
                   <div className="flex-1" style={{ minHeight: 0 }}>
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={atRiskByDepartment} layout="horizontal">
+                      <BarChart data={atRiskByDepartment} barCategoryGap="20%">
                         <defs>
-                          <linearGradient id="milestoneAtRiskBarGradient" x1="0" y1="0" x2="1" y2="0">
+                          <linearGradient id="milestoneAtRiskBarGradient" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="0%" stopColor="#ef4444" stopOpacity={1} />
-                            <stop offset="100%" stopColor="#fca5a5" stopOpacity={1} />
+                            <stop offset="100%" stopColor="#fca5a5" stopOpacity={0.8} />
+                          </linearGradient>
+                          <linearGradient id="milestoneCriticalBarGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#8A1538" stopOpacity={1} />
+                            <stop offset="100%" stopColor="#a91d47" stopOpacity={0.8} />
                           </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                        <XAxis type="number" tick={{ fontSize: 10 }} stroke="#6b7280" />
-                        <YAxis type="category" dataKey="department" width={120} tick={{ fontSize: 10 }} stroke="#6b7280" />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+                        <XAxis dataKey="department" tick={{ fontSize: 10 }} stroke="#6b7280" />
+                        <YAxis tick={{ fontSize: 10 }} stroke="#6b7280" allowDecimals={false} />
                         <Tooltip 
                           contentStyle={{ 
                             backgroundColor: 'white', 
                             border: '1px solid #e5e7eb',
-                            borderRadius: '6px',
-                            fontSize: '11px'
+                            borderRadius: '8px',
+                            fontSize: '12px',
+                            boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)'
                           }}
                         />
-                        <Bar dataKey="count" fill="url(#milestoneAtRiskBarGradient)" radius={[0, 4, 4, 0]} name="At Risk" />
+                        <Legend wrapperStyle={{ fontSize: '11px' }} />
+                        <Bar dataKey="count" fill="url(#milestoneAtRiskBarGradient)" radius={[4, 4, 0, 0]} name="At Risk" />
+                        <Bar dataKey="criticalPath" fill="url(#milestoneCriticalBarGradient)" radius={[4, 4, 0, 0]} name="Critical Path" />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
                 </div>
 
                 {/* Risk Alert Card */}
-                <div className="bg-white rounded-lg border border-gray-200 p-4 h-full flex flex-col">
+                <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col" style={{ height: '300px' }}>
                   <h3 className="font-semibold text-gray-900 mb-3 text-sm">Risk Summary</h3>
                   <div className="flex-1 flex flex-col justify-center space-y-4">
                     <div className="p-4 bg-red-50 rounded-lg border-2 border-red-200">
