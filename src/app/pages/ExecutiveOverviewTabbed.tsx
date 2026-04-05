@@ -7,14 +7,14 @@ import {
   Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell 
 } from 'recharts';
 import { Link } from 'react-router';
-import { AlertTriangle, TrendingUp, DollarSign, Target, Flag, CheckCircle2, Filter, Info } from 'lucide-react';
+import { AlertTriangle, TrendingUp, DollarSign, Target, Flag, CheckCircle2, Filter, Info, Languages } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MilestoneView } from './MilestoneView';
 import { InfoTooltip } from '../components/InfoTooltip';
 
 export function ExecutiveOverview() {
-  const { t } = useLanguage();
+  const { t, language, toggleLanguage } = useLanguage();
   const [viewMode, setViewMode] = useState<'portfolio' | 'milestone'>('portfolio');
   const [activeTab, setActiveTab] = useState<'performance' | 'cycle' | 'department'>('performance');
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
@@ -181,10 +181,21 @@ export function ExecutiveOverview() {
         <DashboardHeader 
           title={t('exec.title')}
           subtitle={t('exec.subtitle')}
+          hideLanguageToggle
         />
         
-        {/* Toggle Switch - Top Right */}
-        <div className="absolute right-6 top-6 z-10">
+        {/* Toggle Switch & Language - Top Right */}
+        <div className="absolute right-6 top-6 z-10 flex items-center gap-3">
+          <button
+            onClick={toggleLanguage}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
+            title={language === 'en' ? 'Switch to Arabic' : 'التبديل إلى الإنجليزية'}
+          >
+            <Languages className="w-4 h-4" style={{ color: '#8A1538' }} />
+            <span className="text-sm font-medium text-gray-700">
+              {language === 'en' ? 'العربية' : 'English'}
+            </span>
+          </button>
           <div className="inline-flex items-center bg-white border-2 border-gray-200 rounded-lg p-1 shadow-sm">
             <button
               onClick={() => setViewMode('portfolio')}

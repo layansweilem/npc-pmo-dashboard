@@ -11,9 +11,10 @@ interface DashboardHeaderProps {
   title: string;
   subtitle?: string;
   breadcrumbs?: Breadcrumb[];
+  hideLanguageToggle?: boolean;
 }
 
-export function DashboardHeader({ title, subtitle, breadcrumbs }: DashboardHeaderProps) {
+export function DashboardHeader({ title, subtitle, breadcrumbs, hideLanguageToggle }: DashboardHeaderProps) {
   const { language, toggleLanguage } = useLanguage();
 
   return (
@@ -58,7 +59,7 @@ export function DashboardHeader({ title, subtitle, breadcrumbs }: DashboardHeade
             <p className="text-gray-600 mt-1">{subtitle}</p>
           )}
         </div>
-        {(!breadcrumbs || breadcrumbs.length === 0) && (
+        {(!breadcrumbs || breadcrumbs.length === 0) && !hideLanguageToggle && (
           <button
             onClick={toggleLanguage}
             className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
