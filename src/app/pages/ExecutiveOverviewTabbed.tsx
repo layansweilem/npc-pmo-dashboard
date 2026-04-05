@@ -15,7 +15,7 @@ import { InfoTooltip } from '../components/InfoTooltip';
 import { ChartInfoToggle } from '../components/ChartInfoToggle';
 
 export function ExecutiveOverview() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [viewMode, setViewMode] = useState<'portfolio' | 'milestone'>('portfolio');
   const [activeTab, setActiveTab] = useState<'performance' | 'cycle' | 'department'>('performance');
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
@@ -24,7 +24,6 @@ export function ExecutiveOverview() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
   
-  // Filter projects based on selections
   const filteredProjects = useMemo(() => {
     let filtered = projects;
     
@@ -39,7 +38,6 @@ export function ExecutiveOverview() {
     return filtered;
   }, [selectedStatus, selectedDepartment]);
 
-  // Calculate KPIs
   const totalProjects = filteredProjects.length;
   const onTrack = filteredProjects.filter(p => p.status === 'on-track').length;
   const atRisk = filteredProjects.filter(p => p.status === 'at-risk').length;
@@ -53,7 +51,6 @@ export function ExecutiveOverview() {
   const totalForecast = filteredProjects.reduce((sum, p) => sum + p.forecast, 0);
   const budgetVariance = totalForecast - totalBudget;
 
-  // Top 5 over-budget projects
   const overBudgetProjects = useMemo(() => {
     return filteredProjects
       .filter(p => p.forecast > p.budget)
@@ -61,7 +58,6 @@ export function ExecutiveOverview() {
       .slice(0, 5);
   }, [filteredProjects]);
 
-  // Top 5 delayed projects
   const delayedProjects = useMemo(() => {
     return filteredProjects
       .filter(p => p.sv < 0)
@@ -69,14 +65,12 @@ export function ExecutiveOverview() {
       .slice(0, 5);
   }, [filteredProjects]);
 
-  // Status distribution
   const statusData = [
-    { name: 'On Track', value: onTrack, color: '#10b981' },
-    { name: 'At Risk', value: atRisk, color: '#f59e0b' },
-    { name: 'Critical', value: critical, color: '#ef4444' },
+    { name: t('exec.onTrack'), value: onTrack, color: '#10b981' },
+    { name: t('exec.atRisk'), value: atRisk, color: '#f59e0b' },
+    { name: t('exec.critical'), value: critical, color: '#ef4444' },
   ];
 
-  // Strategic alignment
   const initiativeData = filteredProjects.reduce((acc, p) => {
     const existing = acc.find(i => i.name === p.strategicInitiative);
     if (existing) {
@@ -97,15 +91,13 @@ export function ExecutiveOverview() {
     'Alignment %': Math.round((i.onTrack / i.total) * 100),
   }));
 
-  // Budget burn vs progress
   const budgetBurnData = [{
-    category: 'Budget',
+    category: t('exec.budgetCol'),
     Planned: totalBudget / 1000000,
     Actual: totalSpent / 1000000,
     Forecast: totalForecast / 1000000,
   }];
   
-  // PMO Cycle Health data
   const totalMilestones = milestones.length;
   const milestonesCompleted = milestones.filter(m => m.status === 'completed').length;
   const milestonesOnTrack = milestones.filter(m => m.status === 'on-track').length;
@@ -128,16 +120,23 @@ export function ExecutiveOverview() {
     }
     return acc;
   }, [] as Array<{ stage: string; count: number; completed: number; onTrack: number }>);
+
+  const stageNameMap: Record<string, string> = {
+    'initiation': t('ms.initiation'),
+    'planning': t('ms.planning'),
+    'execution': t('ms.execution'),
+    'monitoring': t('ms.monitoring'),
+    'closure': t('ms.closure'),
+  };
   
   const stageChartData = stageDistribution.map(s => ({
-    name: s.stage.charAt(0).toUpperCase() + s.stage.slice(1),
+    name: stageNameMap[s.stage] || s.stage.charAt(0).toUpperCase() + s.stage.slice(1),
     Total: s.count,
     Completed: s.completed,
     'On Track': s.onTrack - s.completed,
     'At Risk': s.count - s.onTrack,
   }));
   
-  // Department Distribution data
   const departmentData = filteredProjects.reduce((acc, p) => {
     const existing = acc.find(d => d.name === p.portfolio);
     if (existing) {
@@ -175,6 +174,15 @@ export function ExecutiveOverview() {
     Spent: d.spent / 1000000,
     'Utilization %': Math.round((d.spent / d.budget) * 100),
   }));
+
+  const translateMonth = (month: string) => {
+    if (language !== 'ar') return month;
+    const map: Record<string, string> = {
+      'Oct': t('month.oct'), 'Nov': t('month.nov'), 'Dec': t('month.dec'),
+      'Jan': t('month.jan'), 'Feb': t('month.feb'), 'Mar': t('month.mar'),
+    };
+    return map[month] || month;
+  };
   
   return (
     <div className="flex flex-col h-full">
@@ -183,7 +191,6 @@ export function ExecutiveOverview() {
         subtitle={t('exec.subtitle')}
       />
 
-      {/* Portfolio / Milestone View Tabs */}
       <div className="bg-white border-b border-gray-200 px-8 py-2 shadow-sm">
         <div className="flex items-center gap-2">
           <button
@@ -195,7 +202,7 @@ export function ExecutiveOverview() {
             }`}
           >
             <LayoutDashboard className="w-4 h-4" />
-            Portfolio View
+            {t('exec.portfolioView')}
           </button>
           <button
             onClick={() => setViewMode('milestone')}
@@ -206,36 +213,31 @@ export function ExecutiveOverview() {
             }`}
           >
             <CalendarCheck className="w-4 h-4" />
-            Milestone View
+            {t('exec.milestoneView')}
           </button>
         </div>
       </div>
       
-      {/* Main Content Area - Both Containers Always Exist */}
       <div className="flex-1 overflow-hidden relative">
         
-        {/* Portfolio View Container */}
         <div 
           className={`absolute inset-0 flex flex-col transition-opacity duration-200 ${
             viewMode === 'portfolio' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
           }`}
         >
-          {/* Scrollable wrapper for Portfolio View */}
           <div className="flex-1 overflow-y-auto p-6 bg-gray-50/50">
-            {/* Grouped Multi-Row KPI Container */}
             <div className="mb-5 flex-shrink-0 bg-white rounded-xl border border-gray-200/80 shadow-sm p-4">
             
-            {/* Interactive Filters */}
             {(selectedStatus || selectedDepartment) && (
               <div className="mb-3 flex items-center gap-2 p-2 bg-white rounded border border-blue-200">
                 <Filter className="w-4 h-4 text-blue-600" />
-                <span className="text-xs font-medium text-gray-700">Active Filters:</span>
+                <span className="text-xs font-medium text-gray-700">{t('exec.activeFiltersLabel')}</span>
                 {selectedStatus && (
                   <button
                     onClick={() => setSelectedStatus(null)}
                     className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium hover:bg-blue-200 transition-colors"
                   >
-                    Status: {selectedStatus}
+                    {t('exec.statusFilter')} {selectedStatus}
                     <span className="text-blue-800">×</span>
                   </button>
                 )}
@@ -244,7 +246,7 @@ export function ExecutiveOverview() {
                     onClick={() => setSelectedDepartment(null)}
                     className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium hover:bg-blue-200 transition-colors"
                   >
-                    Dept: {selectedDepartment}
+                    {t('exec.deptFilter')} {selectedDepartment}
                     <span className="text-blue-800">×</span>
                   </button>
                 )}
@@ -255,16 +257,15 @@ export function ExecutiveOverview() {
                   }}
                   className="ml-auto text-xs text-blue-600 hover:text-blue-800 font-medium"
                 >
-                  Clear All
+                  {t('exec.clearAll')}
                 </button>
               </div>
             )}
             
-            {/* Portfolio Health Group */}
             <div className="mb-4">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-1 h-4 rounded-full bg-[#8A1538]"></div>
-                <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider">Portfolio Health</h3>
+                <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider">{t('exec.portfolioHealthSection')}</h3>
               </div>
               <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-1.5">
                 <div className="bg-white rounded-lg border-l-[3px] border-l-[#8A1538] border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
@@ -274,7 +275,7 @@ export function ExecutiveOverview() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1">
-                        <p className="text-[10px] text-gray-500 font-medium">Portfolio Health %</p>
+                        <p className="text-[10px] text-gray-500 font-medium">{t('exec.portfolioHealthPct')}</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -283,15 +284,15 @@ export function ExecutiveOverview() {
                           />
                           {activeTooltip === 'portfolioHealth' && (
                             <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                              <div className="font-semibold mb-1.5">How it's calculated:</div>
-                              <div className="text-gray-200">Percentage of projects with "On Track" status. Formula: (On Track Projects / Total Projects) × 100</div>
+                              <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                              <div className="text-gray-200">{t('tooltip.portfolioHealth')}</div>
                               <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                             </div>
                           )}
                         </div>
                       </div>
                       <p className="text-xl font-bold text-gray-900 leading-tight">{Math.round((onTrack / totalProjects) * 100)}%</p>
-                      <p className="text-[9px] text-gray-400">{onTrack}/{totalProjects} on track</p>
+                      <p className="text-[9px] text-gray-400">{onTrack}/{totalProjects} {t('exec.onTrackSub')}</p>
                     </div>
                   </div>
                 </div>
@@ -303,7 +304,7 @@ export function ExecutiveOverview() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1">
-                        <p className="text-[10px] text-gray-500 font-medium">Total Active Projects</p>
+                        <p className="text-[10px] text-gray-500 font-medium">{t('exec.totalActiveProjects')}</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -312,15 +313,15 @@ export function ExecutiveOverview() {
                           />
                           {activeTooltip === 'totalProjects' && (
                             <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                              <div className="font-semibold mb-1.5">How it's calculated:</div>
-                              <div className="text-gray-200">Count of all projects in the portfolio with active status (not completed or cancelled).</div>
+                              <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                              <div className="text-gray-200">{t('tooltip.totalProjects')}</div>
                               <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                             </div>
                           )}
                         </div>
                       </div>
                       <p className="text-xl font-bold text-gray-900 leading-tight">{totalProjects}</p>
-                      <p className="text-[9px] text-green-600">+3 vs last quarter</p>
+                      <p className="text-[9px] text-green-600">{t('exec.vsLastQuarterPlus3')}</p>
                     </div>
                   </div>
                 </div>
@@ -332,7 +333,7 @@ export function ExecutiveOverview() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1">
-                        <p className="text-[10px] text-gray-500 font-medium">On Track Projects %</p>
+                        <p className="text-[10px] text-gray-500 font-medium">{t('exec.onTrackProjectsPct')}</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -341,15 +342,15 @@ export function ExecutiveOverview() {
                           />
                           {activeTooltip === 'onTrackPct' && (
                             <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                              <div className="font-semibold mb-1.5">How it's calculated:</div>
-                              <div className="text-gray-200">Projects meeting both schedule (SPI ≥ 0.95) and cost (CPI ≥ 0.95) targets with no critical issues.</div>
+                              <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                              <div className="text-gray-200">{t('tooltip.onTrackPct')}</div>
                               <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                             </div>
                           )}
                         </div>
                       </div>
                       <p className="text-xl font-bold text-green-600 leading-tight">{Math.round((onTrack / totalProjects) * 100)}%</p>
-                      <p className="text-[9px] text-gray-400">{onTrack} projects</p>
+                      <p className="text-[9px] text-gray-400">{onTrack} {t('exec.projectsCount')}</p>
                     </div>
                   </div>
                 </div>
@@ -361,7 +362,7 @@ export function ExecutiveOverview() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1">
-                        <p className="text-[10px] text-gray-500 font-medium">Critical Projects</p>
+                        <p className="text-[10px] text-gray-500 font-medium">{t('exec.criticalProjects')}</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -370,15 +371,15 @@ export function ExecutiveOverview() {
                           />
                           {activeTooltip === 'critical' && (
                             <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                              <div className="font-semibold mb-1.5">How it's calculated:</div>
-                              <div className="text-gray-200">Projects with SPI &lt; 0.8 or CPI &lt; 0.8, or those with 6+ open high-impact risks requiring immediate executive intervention.</div>
+                              <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                              <div className="text-gray-200">{t('tooltip.critical')}</div>
                               <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                             </div>
                           )}
                         </div>
                       </div>
                       <p className="text-xl font-bold text-red-600 leading-tight">{critical}</p>
-                      <p className="text-[9px] text-gray-400">immediate action</p>
+                      <p className="text-[9px] text-gray-400">{t('exec.immediateAction')}</p>
                     </div>
                   </div>
                 </div>
@@ -390,7 +391,7 @@ export function ExecutiveOverview() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1">
-                        <p className="text-[10px] text-gray-500 font-medium">Open Risks</p>
+                        <p className="text-[10px] text-gray-500 font-medium">{t('exec.openRisksLabel')}</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -399,26 +400,25 @@ export function ExecutiveOverview() {
                           />
                           {activeTooltip === 'openRisks' && (
                             <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                              <div className="font-semibold mb-1.5">How it's calculated:</div>
-                              <div className="text-gray-200">Count of projects with "At Risk" or "Critical" status that have unresolved issues affecting timeline or budget.</div>
+                              <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                              <div className="text-gray-200">{t('tooltip.openRisks')}</div>
                               <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                             </div>
                           )}
                         </div>
                       </div>
                       <p className="text-xl font-bold text-amber-600 leading-tight">{atRisk + critical}</p>
-                      <p className="text-[9px] text-gray-400">{atRisk} at risk + {critical} critical</p>
+                      <p className="text-[9px] text-gray-400">{atRisk} {t('exec.atRiskPlusCriticalSub')} + {critical} {t('exec.criticalSub')}</p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Financial Performance Group */}
             <div className="mb-4">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-1 h-4 rounded-full bg-[#8A1538]"></div>
-                <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider">Financial Performance</h3>
+                <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider">{t('exec.financialPerformance')}</h3>
               </div>
               <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-1.5">
                 <div className={`bg-white rounded-lg border-l-[3px] ${Number(avgSPI) >= 1 ? 'border-l-green-500' : Number(avgSPI) >= 0.85 ? 'border-l-amber-500' : 'border-l-red-500'} border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow`}>
@@ -428,7 +428,7 @@ export function ExecutiveOverview() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1">
-                        <p className="text-[10px] text-gray-500 font-medium">Portfolio SPI</p>
+                        <p className="text-[10px] text-gray-500 font-medium">{t('exec.portfolioSPI')}</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -437,15 +437,15 @@ export function ExecutiveOverview() {
                           />
                           {activeTooltip === 'spi' && (
                             <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                              <div className="font-semibold mb-1.5">How it's calculated:</div>
-                              <div className="text-gray-200">Schedule Performance Index = Earned Value / Planned Value. &gt; 1.0 = ahead of schedule, &lt; 1.0 = behind schedule. Averaged across all projects.</div>
+                              <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                              <div className="text-gray-200">{t('tooltip.spi')}</div>
                               <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                             </div>
                           )}
                         </div>
                       </div>
                       <p className={`text-xl font-bold leading-tight ${Number(avgSPI) >= 1 ? 'text-green-600' : Number(avgSPI) >= 0.85 ? 'text-amber-600' : 'text-red-600'}`}>{avgSPI}</p>
-                      <p className="text-[9px] text-gray-400">Schedule performance</p>
+                      <p className="text-[9px] text-gray-400">{t('exec.schedulePerformanceSub')}</p>
                     </div>
                   </div>
                 </div>
@@ -457,7 +457,7 @@ export function ExecutiveOverview() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1">
-                        <p className="text-[10px] text-gray-500 font-medium">Portfolio CPI</p>
+                        <p className="text-[10px] text-gray-500 font-medium">{t('exec.portfolioCPI')}</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -466,15 +466,15 @@ export function ExecutiveOverview() {
                           />
                           {activeTooltip === 'cpi' && (
                             <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                              <div className="font-semibold mb-1.5">How it's calculated:</div>
-                              <div className="text-gray-200">Cost Performance Index = Earned Value / Actual Cost. &gt; 1.0 = under budget, &lt; 1.0 = over budget. Averaged across all projects.</div>
+                              <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                              <div className="text-gray-200">{t('tooltip.cpi')}</div>
                               <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                             </div>
                           )}
                         </div>
                       </div>
                       <p className={`text-xl font-bold leading-tight ${Number(avgCPI) >= 1 ? 'text-green-600' : Number(avgCPI) >= 0.85 ? 'text-amber-600' : 'text-red-600'}`}>{avgCPI}</p>
-                      <p className="text-[9px] text-gray-400">Cost performance</p>
+                      <p className="text-[9px] text-gray-400">{t('exec.costPerformanceSub')}</p>
                     </div>
                   </div>
                 </div>
@@ -486,7 +486,7 @@ export function ExecutiveOverview() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1">
-                        <p className="text-[10px] text-gray-500 font-medium">Budget Variance</p>
+                        <p className="text-[10px] text-gray-500 font-medium">{t('exec.budgetVarianceLabel')}</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -495,8 +495,8 @@ export function ExecutiveOverview() {
                           />
                           {activeTooltip === 'budgetVariance' && (
                             <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                              <div className="font-semibold mb-1.5">How it's calculated:</div>
-                              <div className="text-gray-200">Total Forecast Cost - Total Budget. Positive = over budget, Negative = under budget. Sum across all active projects.</div>
+                              <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                              <div className="text-gray-200">{t('tooltip.budgetVariance')}</div>
                               <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                             </div>
                           )}
@@ -505,7 +505,7 @@ export function ExecutiveOverview() {
                       <p className={`text-xl font-bold leading-tight ${budgetVariance > 0 ? 'text-red-600' : 'text-green-600'}`}>
                         ${(Math.abs(budgetVariance) / 1000000).toFixed(1)}M
                       </p>
-                      <p className="text-[9px] text-gray-400">{budgetVariance > 0 ? 'Over' : 'Under'} budget</p>
+                      <p className="text-[9px] text-gray-400">{budgetVariance > 0 ? t('exec.overBudgetSub') : t('exec.underBudgetSub')}</p>
                     </div>
                   </div>
                 </div>
@@ -517,7 +517,7 @@ export function ExecutiveOverview() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1">
-                        <p className="text-[10px] text-gray-500 font-medium">Forecast Accuracy</p>
+                        <p className="text-[10px] text-gray-500 font-medium">{t('exec.forecastAccuracyLabel')}</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -526,26 +526,25 @@ export function ExecutiveOverview() {
                           />
                           {activeTooltip === 'forecastAccuracy' && (
                             <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                              <div className="font-semibold mb-1.5">How it's calculated:</div>
-                              <div className="text-gray-200">Percentage of projects where final cost was within ±10% of forecasted cost. Higher = better prediction accuracy.</div>
+                              <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                              <div className="text-gray-200">{t('tooltip.forecastAccuracy')}</div>
                               <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                             </div>
                           )}
                         </div>
                       </div>
                       <p className="text-xl font-bold text-gray-900 leading-tight">94%</p>
-                      <p className="text-[9px] text-green-600">+2% vs last quarter</p>
+                      <p className="text-[9px] text-green-600">{t('exec.vsLastQuarterPlus2')}</p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Milestone Delivery Group */}
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-1 h-4 rounded-full bg-[#8A1538]"></div>
-                <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider">Milestone Delivery</h3>
+                <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider">{t('exec.milestoneDeliverySection')}</h3>
               </div>
               <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-1.5">
                 <div className="bg-white rounded-lg border-l-[3px] border-l-[#8A1538] border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
@@ -555,7 +554,7 @@ export function ExecutiveOverview() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1">
-                        <p className="text-[10px] text-gray-500 font-medium">Total Milestones</p>
+                        <p className="text-[10px] text-gray-500 font-medium">{t('exec.totalMilestonesLabel')}</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -564,15 +563,15 @@ export function ExecutiveOverview() {
                           />
                           {activeTooltip === 'totalMilestones' && (
                             <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                              <div className="font-semibold mb-1.5">How it's calculated:</div>
-                              <div className="text-gray-200">Count of all planned milestones across active projects, including completed, in-progress, and upcoming milestones.</div>
+                              <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                              <div className="text-gray-200">{t('tooltip.totalMilestones')}</div>
                               <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                             </div>
                           )}
                         </div>
                       </div>
                       <p className="text-xl font-bold text-gray-900 leading-tight">{totalMilestones}</p>
-                      <p className="text-[9px] text-gray-400">across all projects</p>
+                      <p className="text-[9px] text-gray-400">{t('exec.acrossAllProjects')}</p>
                     </div>
                   </div>
                 </div>
@@ -584,7 +583,7 @@ export function ExecutiveOverview() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1">
-                        <p className="text-[10px] text-gray-500 font-medium">Milestones On Track</p>
+                        <p className="text-[10px] text-gray-500 font-medium">{t('exec.milestonesOnTrackLabel')}</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -593,15 +592,15 @@ export function ExecutiveOverview() {
                           />
                           {activeTooltip === 'milestonesOnTrack' && (
                             <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                              <div className="font-semibold mb-1.5">How it's calculated:</div>
-                              <div className="text-gray-200">Milestones expected to be completed by their planned date based on current progress and no blocking issues.</div>
+                              <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                              <div className="text-gray-200">{t('tooltip.milestonesOnTrack')}</div>
                               <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                             </div>
                           )}
                         </div>
                       </div>
                       <p className="text-xl font-bold text-blue-600 leading-tight">{milestonesOnTrack}</p>
-                      <p className="text-[9px] text-gray-400">{Math.round((milestonesOnTrack / totalMilestones) * 100)}% of total</p>
+                      <p className="text-[9px] text-gray-400">{Math.round((milestonesOnTrack / totalMilestones) * 100)}% {t('exec.ofTotal')}</p>
                     </div>
                   </div>
                 </div>
@@ -613,7 +612,7 @@ export function ExecutiveOverview() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1">
-                        <p className="text-[10px] text-gray-500 font-medium">Milestones At Risk</p>
+                        <p className="text-[10px] text-gray-500 font-medium">{t('exec.milestonesAtRiskLabel')}</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -622,15 +621,15 @@ export function ExecutiveOverview() {
                           />
                           {activeTooltip === 'milestonesAtRisk' && (
                             <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                              <div className="font-semibold mb-1.5">How it's calculated:</div>
-                              <div className="text-gray-200">Milestones with potential delays due to dependencies, resource constraints, or project slippage.</div>
+                              <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                              <div className="text-gray-200">{t('tooltip.milestonesAtRisk')}</div>
                               <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                             </div>
                           )}
                         </div>
                       </div>
                       <p className="text-xl font-bold text-amber-600 leading-tight">{milestonesAtRisk}</p>
-                      <p className="text-[9px] text-gray-400">needs attention</p>
+                      <p className="text-[9px] text-gray-400">{t('exec.needsAttention')}</p>
                     </div>
                   </div>
                 </div>
@@ -642,7 +641,7 @@ export function ExecutiveOverview() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1">
-                        <p className="text-[10px] text-gray-500 font-medium">Milestones Delayed</p>
+                        <p className="text-[10px] text-gray-500 font-medium">{t('exec.milestonesDelayedLabel')}</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -651,15 +650,15 @@ export function ExecutiveOverview() {
                           />
                           {activeTooltip === 'milestonesDelayed' && (
                             <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                              <div className="font-semibold mb-1.5">How it's calculated:</div>
-                              <div className="text-gray-200">Milestones that have passed their planned completion date without being marked complete.</div>
+                              <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                              <div className="text-gray-200">{t('tooltip.milestonesDelayed')}</div>
                               <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                             </div>
                           )}
                         </div>
                       </div>
                       <p className="text-xl font-bold text-red-600 leading-tight">{milestonesDelayed}</p>
-                      <p className="text-[9px] text-gray-400">past due date</p>
+                      <p className="text-[9px] text-gray-400">{t('exec.pastDueDate')}</p>
                     </div>
                   </div>
                 </div>
@@ -671,7 +670,7 @@ export function ExecutiveOverview() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1">
-                        <p className="text-[10px] text-gray-500 font-medium">Milestone Completion %</p>
+                        <p className="text-[10px] text-gray-500 font-medium">{t('exec.milestoneCompletionPct')}</p>
                         <div className="relative">
                           <Info 
                             className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -680,8 +679,8 @@ export function ExecutiveOverview() {
                           />
                           {activeTooltip === 'milestoneCompletion' && (
                             <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                              <div className="font-semibold mb-1.5">How it's calculated:</div>
-                              <div className="text-gray-200">Formula: (Completed Milestones / Total Milestones) × 100. Shows overall portfolio progress.</div>
+                              <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                              <div className="text-gray-200">{t('tooltip.milestoneCompletion')}</div>
                               <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                             </div>
                           )}
@@ -690,7 +689,7 @@ export function ExecutiveOverview() {
                       <p className="text-xl font-bold text-green-600 leading-tight">
                         {Math.round((milestonesCompleted / totalMilestones) * 100)}%
                       </p>
-                      <p className="text-[9px] text-gray-400">{milestonesCompleted} completed</p>
+                      <p className="text-[9px] text-gray-400">{milestonesCompleted} {t('exec.completedSub')}</p>
                     </div>
                   </div>
                 </div>
@@ -698,7 +697,6 @@ export function ExecutiveOverview() {
             </div>
           </div>
 
-          {/* Tab Navigation */}
           <div className="flex gap-2 mb-5 flex-shrink-0 bg-white rounded-xl p-1.5 border border-gray-200/80 shadow-sm">
             <button
               onClick={() => setActiveTab('performance')}
@@ -709,7 +707,7 @@ export function ExecutiveOverview() {
               }`}
             >
               <TrendingUp className="w-4 h-4" />
-              Portfolio Performance
+              {t('exec.portfolioPerformance')}
             </button>
             <button
               onClick={() => setActiveTab('cycle')}
@@ -720,7 +718,7 @@ export function ExecutiveOverview() {
               }`}
             >
               <Target className="w-4 h-4" />
-              PMO Cycle Health
+              {t('exec.pmoCycleHealth')}
             </button>
             <button
               onClick={() => setActiveTab('department')}
@@ -731,19 +729,16 @@ export function ExecutiveOverview() {
               }`}
             >
               <LayoutDashboard className="w-4 h-4" />
-              Department Distribution
+              {t('exec.departmentDistribution')}
             </button>
           </div>
 
-          {/* Tab Content - Scrollable */}
           <div className="flex-1 overflow-y-auto">
             {activeTab === 'performance' && (
               <div className="flex flex-col gap-5 p-4 pb-6">
-                {/* Performance Charts Grid */}
                 <div className="grid grid-cols-3 gap-4" style={{ height: '280px' }}>
-                  {/* Status Distribution */}
                   <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 h-full flex flex-col">
-                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Status Distribution <ChartInfoToggle description="Shows the breakdown of all projects by their current status (On Track, At Risk, Critical, Completed). Helps identify the overall health of the portfolio at a glance." /></h3>
+                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('exec.statusDistribution')} <ChartInfoToggle description={t('chart.statusDistDesc')} /></h3>
                     <div className="flex-1" style={{ minHeight: 0 }}>
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
@@ -767,9 +762,8 @@ export function ExecutiveOverview() {
                     </div>
                   </div>
 
-                  {/* SPI & CPI Trend */}
                   <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 h-full flex flex-col">
-                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">SPI & CPI Trend (6 Months) <ChartInfoToggle description="Tracks Schedule Performance Index (SPI) and Cost Performance Index (CPI) over the last 6 months. Values above 1.0 indicate ahead of schedule/under budget; below 1.0 means behind schedule/over budget." /></h3>
+                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('exec.spiCpiTrend')} <ChartInfoToggle description={t('chart.spiCpiTrendDesc')} /></h3>
                     <div className="flex-1" style={{ minHeight: 0 }}>
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={portfolioTrends}>
@@ -784,7 +778,7 @@ export function ExecutiveOverview() {
                             </linearGradient>
                           </defs>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                          <XAxis dataKey="month" tick={{ fontSize: 10 }} stroke="#6b7280" />
+                          <XAxis dataKey="month" tick={{ fontSize: 10 }} stroke="#6b7280" tickFormatter={translateMonth} />
                           <YAxis domain={[0.8, 1.1]} tick={{ fontSize: 10 }} stroke="#6b7280" />
                           <Tooltip 
                             contentStyle={{ 
@@ -793,6 +787,7 @@ export function ExecutiveOverview() {
                               borderRadius: '6px',
                               fontSize: '11px'
                             }}
+                            labelFormatter={translateMonth}
                           />
                           <Legend wrapperStyle={{ fontSize: '11px' }} />
                           <Line 
@@ -818,9 +813,8 @@ export function ExecutiveOverview() {
                     </div>
                   </div>
 
-                  {/* Strategic Alignment */}
                   <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 h-full flex flex-col">
-                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Strategic Alignment % <ChartInfoToggle description="Measures how well the portfolio aligns with each strategic initiative. Higher percentages indicate stronger alignment between projects and organizational goals." /></h3>
+                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('exec.strategicAlignmentPct')} <ChartInfoToggle description={t('chart.strategicAlignDesc')} /></h3>
                     <div className="flex-1" style={{ minHeight: 0 }}>
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={initiativeChartData} layout="vertical">
@@ -841,26 +835,24 @@ export function ExecutiveOverview() {
                               fontSize: '11px'
                             }}
                           />
-                          <Bar dataKey="Alignment %" fill="url(#alignmentGradient)" radius={[0, 4, 4, 0]} />
+                          <Bar dataKey="Alignment %" name={t('exec.alignmentPct')} fill="url(#alignmentGradient)" radius={[0, 4, 4, 0]} />
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
                   </div>
                 </div>
 
-                {/* Tables Row */}
                 <div className="grid grid-cols-2 gap-4 flex-shrink-0">
-                  {/* Top 5 Over-Budget Projects */}
                   <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5">
-                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Top 5 Over-Budget Projects <ChartInfoToggle description="Lists the top 5 projects with the largest budget overruns, showing budget vs forecast variance. These projects need immediate financial review." /></h3>
+                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('exec.overBudgetProjectsTitle')} <ChartInfoToggle description={t('chart.overBudgetDesc')} /></h3>
                     <div className="overflow-hidden rounded-lg border border-gray-100">
                       <table className="w-full text-xs">
                         <thead>
                           <tr className="bg-gradient-to-r from-gray-50 to-gray-100/50">
-                            <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Project</th>
-                            <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Budget</th>
-                            <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Forecast</th>
-                            <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Variance</th>
+                            <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.projectCol')}</th>
+                            <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.budgetCol')}</th>
+                            <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.forecastCol')}</th>
+                            <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.varianceCol')}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -901,18 +893,17 @@ export function ExecutiveOverview() {
                     </div>
                   </div>
 
-                  {/* Top 5 Delayed Projects */}
                   <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5">
-                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Top 5 Delayed Projects <ChartInfoToggle description="Lists the top 5 projects with the most schedule delays based on SPI. Lower SPI indicates greater schedule slippage requiring corrective action." /></h3>
+                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('exec.delayedProjectsTitle')} <ChartInfoToggle description={t('chart.delayedDesc')} /></h3>
                     <div className="overflow-hidden rounded-lg border border-gray-100">
                       <table className="w-full text-xs">
                         <thead>
                           <tr className="bg-gradient-to-r from-gray-50 to-gray-100/50">
-                            <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Project</th>
-                            <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Status</th>
-                            <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">SPI</th>
-                            <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Delay</th>
-                            <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">PM</th>
+                            <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.projectCol')}</th>
+                            <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.statusCol')}</th>
+                            <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.spiCol')}</th>
+                            <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.delayCol')}</th>
+                            <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.pmCol')}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -944,7 +935,7 @@ export function ExecutiveOverview() {
                                 {project.spi.toFixed(2)}
                               </td>
                               <td className="text-right text-red-600 font-semibold">
-                                {Math.abs(project.sv)}d
+                                {Math.abs(project.sv)}{t('common.daysShort')}
                               </td>
                               <td className="text-right text-gray-700">
                                 {project.projectManager.split(' ')[0]}
@@ -961,11 +952,9 @@ export function ExecutiveOverview() {
 
             {activeTab === 'cycle' && (
               <div className="flex flex-col gap-5 p-4 pb-6">
-                {/* PMO Cycle Charts Grid */}
                 <div className="grid grid-cols-3 gap-4" style={{ height: '400px' }}>
-                  {/* PMO Stage Distribution */}
                   <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 flex flex-col col-span-2">
-                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">PMO Cycle Stage Distribution <ChartInfoToggle description="Shows milestone distribution across PMO lifecycle stages (Initiation through Closure). Each bar is stacked by status: Completed, On Track, and At Risk." /></h3>
+                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('exec.pmoCycleStageDistribution')} <ChartInfoToggle description={t('chart.pmoCycleStageDesc')} /></h3>
                     <div className="flex-1 min-h-0">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={stageChartData}>
@@ -995,58 +984,56 @@ export function ExecutiveOverview() {
                             }}
                           />
                           <Legend wrapperStyle={{ fontSize: '11px' }} />
-                          <Bar dataKey="Completed" stackId="a" fill="url(#completedGradient)" radius={[0, 0, 0, 0]} />
-                          <Bar dataKey="On Track" stackId="a" fill="url(#onTrackGradient)" radius={[0, 0, 0, 0]} />
-                          <Bar dataKey="At Risk" stackId="a" fill="url(#atRiskGradient)" radius={[4, 4, 0, 0]} />
+                          <Bar dataKey="Completed" name={t('exec.completed')} stackId="a" fill="url(#completedGradient)" radius={[0, 0, 0, 0]} />
+                          <Bar dataKey="On Track" name={t('exec.onTrack')} stackId="a" fill="url(#onTrackGradient)" radius={[0, 0, 0, 0]} />
+                          <Bar dataKey="At Risk" name={t('exec.atRisk')} stackId="a" fill="url(#atRiskGradient)" radius={[4, 4, 0, 0]} />
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
                   </div>
 
-                  {/* Milestone Status Summary */}
                   <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 flex flex-col">
-                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Milestone Status Summary <ChartInfoToggle description="Quick overview of milestone counts by status: Completed, On Track, At Risk, and Delayed. Provides an at-a-glance view of delivery health." /></h3>
+                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('exec.milestoneStatusSummary')} <ChartInfoToggle description={t('chart.milestoneStatusDesc')} /></h3>
                     <div className="flex-1 flex flex-col justify-center space-y-4">
                       <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                        <span className="text-sm font-medium text-gray-700">Completed</span>
+                        <span className="text-sm font-medium text-gray-700">{t('exec.completed')}</span>
                         <span className="text-2xl font-bold text-green-600">{milestonesCompleted}</span>
                       </div>
                       <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                        <span className="text-sm font-medium text-gray-700">On Track</span>
+                        <span className="text-sm font-medium text-gray-700">{t('exec.onTrack')}</span>
                         <span className="text-2xl font-bold text-blue-600">{milestonesOnTrack}</span>
                       </div>
                       <div className="flex items-center justify-between p-3 bg-amber-50 rounded-lg">
-                        <span className="text-sm font-medium text-gray-700">At Risk</span>
+                        <span className="text-sm font-medium text-gray-700">{t('exec.atRisk')}</span>
                         <span className="text-2xl font-bold text-amber-600">{milestonesAtRisk}</span>
                       </div>
                       <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
-                        <span className="text-sm font-medium text-gray-700">Delayed</span>
+                        <span className="text-sm font-medium text-gray-700">{t('exec.delayed')}</span>
                         <span className="text-2xl font-bold text-red-600">{milestonesDelayed}</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Stage Details Table */}
                 <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 flex-shrink-0">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">PMO Stage Breakdown <ChartInfoToggle description="Detailed table showing milestone health per PMO stage, including completed, on track, and at risk counts with health percentage." /></h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('exec.pmoStageBreakdown')} <ChartInfoToggle description={t('chart.pmoStageBreakdownDesc')} /></h3>
                   <div className="overflow-hidden rounded-lg border border-gray-100">
                     <table className="w-full text-xs">
                       <thead>
                         <tr className="bg-gradient-to-r from-gray-50 to-gray-100/50">
-                          <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Stage</th>
-                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Total</th>
-                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Completed</th>
-                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">On Track</th>
-                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">At Risk</th>
-                          <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Health %</th>
+                          <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.stageCol')}</th>
+                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.totalCol')}</th>
+                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.completedCol')}</th>
+                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.onTrackCol')}</th>
+                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.atRiskCol')}</th>
+                          <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.healthPctCol')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {stageDistribution.map(stage => (
                           <tr key={stage.stage} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                             <td className="py-2 font-medium text-gray-900">
-                              {stage.stage.charAt(0).toUpperCase() + stage.stage.slice(1)}
+                              {stageNameMap[stage.stage] || stage.stage.charAt(0).toUpperCase() + stage.stage.slice(1)}
                             </td>
                             <td className="text-center text-gray-700">{stage.count}</td>
                             <td className="text-center">
@@ -1078,11 +1065,9 @@ export function ExecutiveOverview() {
 
             {activeTab === 'department' && (
               <div className="flex flex-col gap-5 p-4 pb-6">
-                {/* Department Charts Grid */}
                 <div className="grid grid-cols-2 gap-4" style={{ height: '400px' }}>
-                  {/* Department Health Status */}
                   <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 flex flex-col">
-                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Department Health Status <ChartInfoToggle description="Stacked bar chart showing project status distribution per department. Identifies which departments have the most critical or at-risk projects." /></h3>
+                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('exec.departmentHealthStatus')} <ChartInfoToggle description={t('chart.deptHealthDesc')} /></h3>
                     <div className="flex-1 min-h-0">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={departmentChartData}>
@@ -1112,17 +1097,16 @@ export function ExecutiveOverview() {
                             }}
                           />
                           <Legend wrapperStyle={{ fontSize: '11px' }} />
-                          <Bar dataKey="On Track" stackId="a" fill="url(#onTrackDeptGradient)" radius={[0, 0, 0, 0]} />
-                          <Bar dataKey="At Risk" stackId="a" fill="url(#atRiskDeptGradient)" radius={[0, 0, 0, 0]} />
-                          <Bar dataKey="Critical" stackId="a" fill="url(#criticalDeptGradient)" radius={[4, 4, 0, 0]} />
+                          <Bar dataKey="On Track" name={t('exec.onTrack')} stackId="a" fill="url(#onTrackDeptGradient)" radius={[0, 0, 0, 0]} />
+                          <Bar dataKey="At Risk" name={t('exec.atRisk')} stackId="a" fill="url(#atRiskDeptGradient)" radius={[0, 0, 0, 0]} />
+                          <Bar dataKey="Critical" name={t('exec.critical')} stackId="a" fill="url(#criticalDeptGradient)" radius={[4, 4, 0, 0]} />
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
                   </div>
 
-                  {/* Department Budget Utilization */}
                   <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 flex flex-col">
-                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Department Budget Utilization ($M) <ChartInfoToggle description="Compares allocated budget vs actual spend for each department. Helps identify departments that are overspending or underspending their budgets." /></h3>
+                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('exec.departmentBudgetUtil')} <ChartInfoToggle description={t('chart.deptBudgetDesc')} /></h3>
                     <div className="flex-1 min-h-0">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={departmentBudgetData} layout="horizontal">
@@ -1148,29 +1132,28 @@ export function ExecutiveOverview() {
                             }}
                           />
                           <Legend wrapperStyle={{ fontSize: '11px' }} />
-                          <Bar dataKey="Budget" fill="url(#budgetDeptGradient)" radius={[4, 4, 0, 0]} />
-                          <Bar dataKey="Spent" fill="url(#spentDeptGradient)" radius={[4, 4, 0, 0]} />
+                          <Bar dataKey="Budget" name={t('exec.budgetLabel')} fill="url(#budgetDeptGradient)" radius={[4, 4, 0, 0]} />
+                          <Bar dataKey="Spent" name={t('exec.spentLabel')} fill="url(#spentDeptGradient)" radius={[4, 4, 0, 0]} />
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
                   </div>
                 </div>
 
-                {/* Department Details Table */}
                 <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 flex-shrink-0">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Department Portfolio Summary <ChartInfoToggle description="Comprehensive table with project counts, status breakdown, budget allocation, spend, and health percentage for each department." /></h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('exec.departmentPortfolioSummary')} <ChartInfoToggle description={t('chart.deptSummaryDesc')} /></h3>
                   <div className="overflow-hidden rounded-lg border border-gray-100">
                     <table className="w-full text-xs">
                       <thead>
                         <tr className="bg-gradient-to-r from-gray-50 to-gray-100/50">
-                          <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Department</th>
-                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Total</th>
-                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">On Track</th>
-                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">At Risk</th>
-                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Critical</th>
-                          <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Budget ($M)</th>
-                          <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Spent ($M)</th>
-                          <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Health %</th>
+                          <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.departmentCol')}</th>
+                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.totalCol')}</th>
+                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.onTrackCol')}</th>
+                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.atRiskCol')}</th>
+                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.criticalCol')}</th>
+                          <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.budgetMCol')}</th>
+                          <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.spentMCol')}</th>
+                          <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('exec.healthPctCol')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1220,7 +1203,6 @@ export function ExecutiveOverview() {
           </div>
         </div>
 
-        {/* Milestone View Container */}
         <div 
           className={`absolute inset-0 flex flex-col transition-opacity duration-200 ${
             viewMode === 'milestone' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'

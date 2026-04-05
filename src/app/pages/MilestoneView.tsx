@@ -8,12 +8,13 @@ import { Link } from 'react-router';
 import { Flag, CheckCircle2, AlertTriangle, Clock, TrendingUp, Info, CalendarCheck, Layers, ShieldAlert } from 'lucide-react';
 import { useState } from 'react';
 import { ChartInfoToggle } from '../components/ChartInfoToggle';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export function MilestoneView() {
+  const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState<'performance' | 'stage' | 'risk'>('performance');
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
   
-  // ===== MILESTONE CALCULATIONS =====
   const totalMilestones = milestones.length;
   const milestonesCompleted = milestones.filter(m => m.status === 'completed').length;
   const milestonesOnTrack = milestones.filter(m => m.status === 'on-track').length;
@@ -22,16 +23,22 @@ export function MilestoneView() {
   const milestonesUpcoming = milestones.filter(m => m.status === 'upcoming').length;
   const milestoneCompletionRate = totalMilestones > 0 ? Math.round((milestonesCompleted / totalMilestones) * 100) : 0;
   
-  // Milestone RAG Distribution
   const milestoneRAGData = [
-    { name: 'Completed', value: milestonesCompleted, color: '#10b981' },
-    { name: 'On Track', value: milestonesOnTrack, color: '#3b82f6' },
-    { name: 'At Risk', value: milestonesAtRisk, color: '#f59e0b' },
-    { name: 'Delayed', value: milestonesDelayed, color: '#ef4444' },
-    { name: 'Upcoming', value: milestonesUpcoming, color: '#cbd5e1' },
+    { name: t('ms.completed'), value: milestonesCompleted, color: '#10b981' },
+    { name: t('ms.onTrack'), value: milestonesOnTrack, color: '#3b82f6' },
+    { name: t('ms.atRisk'), value: milestonesAtRisk, color: '#f59e0b' },
+    { name: t('ms.delayed'), value: milestonesDelayed, color: '#ef4444' },
+    { name: t('ms.upcoming'), value: milestonesUpcoming, color: '#cbd5e1' },
   ];
+
+  const stageNameMap: Record<string, string> = {
+    'initiation': t('ms.initiation'),
+    'planning': t('ms.planning'),
+    'execution': t('ms.execution'),
+    'monitoring': t('ms.monitoring'),
+    'closure': t('ms.closure'),
+  };
   
-  // PMO Cycle Stage Distribution
   const stageDistribution = milestones.reduce((acc, m) => {
     const existing = acc.find(s => s.stage === m.stage);
     if (existing) {
@@ -50,28 +57,26 @@ export function MilestoneView() {
   }, [] as Array<{ stage: string; count: number; completed: number; onTrack: number }>);
   
   const stageChartData = stageDistribution.map(s => ({
-    name: s.stage.charAt(0).toUpperCase() + s.stage.slice(1),
+    name: stageNameMap[s.stage] || s.stage.charAt(0).toUpperCase() + s.stage.slice(1),
     Total: s.count,
     Completed: s.completed,
     'On Track': s.onTrack - s.completed,
     'At Risk': s.count - s.onTrack,
   })).sort((a, b) => b.Total - a.Total);
   
-  // Top 10 Delayed Milestones
   const delayedMilestones = milestones
     .filter(m => m.status === 'delayed')
     .map(m => {
       const project = projects.find(p => p.id === m.projectId);
-      return { ...m, projectName: project?.name || 'Unknown', projectStatus: project?.status };
+      return { ...m, projectName: project?.name || t('common.unknown'), projectStatus: project?.status };
     })
     .slice(0, 10);
   
-  // Milestones At Risk by Department (using portfolio as department proxy)
   const atRiskByDepartment = milestones
     .filter(m => m.status === 'at-risk' || m.status === 'delayed')
     .reduce((acc, m) => {
       const project = projects.find(p => p.id === m.projectId);
-      const dept = project?.portfolio || 'Unknown';
+      const dept = project?.portfolio || t('common.unknown');
       const existing = acc.find(d => d.department === dept);
       if (existing) {
         existing.count++;
@@ -86,8 +91,19 @@ export function MilestoneView() {
       return acc;
     }, [] as Array<{ department: string; count: number; criticalPath: number }>)
     .sort((a, b) => b.count - a.count);
+
+  const translateMonth = (month: string) => {
+    if (language !== 'ar') return month;
+    const parts = month.split(' ');
+    const monthName = parts[0];
+    const year = parts[1] || '';
+    const map: Record<string, string> = {
+      'Oct': t('month.oct'), 'Nov': t('month.nov'), 'Dec': t('month.dec'),
+      'Jan': t('month.jan'), 'Feb': t('month.feb'), 'Mar': t('month.mar'),
+    };
+    return (map[monthName] || monthName) + (year ? ' ' + year : '');
+  };
   
-  // Milestone completion trend
   const milestoneCompletionTrend = [
     { month: 'Oct 2025', planned: 15, actual: 12 },
     { month: 'Nov 2025', planned: 18, actual: 16 },
@@ -97,20 +113,17 @@ export function MilestoneView() {
     { month: 'Mar 2026', planned: 21, actual: 19 },
   ];
   
-  // Critical path milestones
   const criticalPathCount = milestones.filter(m => m.criticalPath).length;
   const criticalPathAtRisk = milestones.filter(m => m.criticalPath && (m.status === 'delayed' || m.status === 'at-risk')).length;
 
   return (
     <div className="flex-1 overflow-y-auto p-6 bg-gray-50/50">
-      {/* Grouped Multi-Row KPI Container */}
       <div className="mb-5 flex-shrink-0 bg-white rounded-xl border border-gray-200/80 shadow-sm p-4">
         
-        {/* Milestone Status Overview Group */}
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-1 h-4 rounded-full bg-[#8A1538]"></div>
-            <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider">Milestone Status Overview</h3>
+            <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider">{t('ms.milestoneStatusOverview')}</h3>
           </div>
           <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-1.5">
             <div className="bg-white rounded-lg border-l-[3px] border-l-[#8A1538] border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
@@ -120,7 +133,7 @@ export function MilestoneView() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1">
-                    <p className="text-[10px] text-gray-500 font-medium">Total Milestones</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{t('ms.totalMilestones')}</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -129,15 +142,15 @@ export function MilestoneView() {
                       />
                       {activeTooltip === 'totalMilestones' && (
                         <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                          <div className="font-semibold mb-1.5">How it's calculated:</div>
-                          <div className="text-gray-200">Count of all milestones across active projects, including completed, on-track, at-risk, delayed, and upcoming statuses.</div>
+                          <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                          <div className="text-gray-200">{t('ms.tooltip.totalMilestones')}</div>
                           <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                         </div>
                       )}
                     </div>
                   </div>
                   <p className="text-xl font-bold text-gray-900 leading-tight">{totalMilestones}</p>
-                  <p className="text-[9px] text-gray-400">{criticalPathCount} critical path</p>
+                  <p className="text-[9px] text-gray-400">{criticalPathCount} {t('ms.criticalPathSub')}</p>
                 </div>
               </div>
             </div>
@@ -149,7 +162,7 @@ export function MilestoneView() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1">
-                    <p className="text-[10px] text-gray-500 font-medium">Completed</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{t('ms.completed')}</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -158,15 +171,15 @@ export function MilestoneView() {
                       />
                       {activeTooltip === 'completed' && (
                         <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                          <div className="font-semibold mb-1.5">How it's calculated:</div>
-                          <div className="text-gray-200">Milestones marked as completed with all deliverables signed off and verified.</div>
+                          <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                          <div className="text-gray-200">{t('ms.tooltip.completed')}</div>
                           <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                         </div>
                       )}
                     </div>
                   </div>
                   <p className="text-xl font-bold text-green-600 leading-tight">{milestonesCompleted}</p>
-                  <p className="text-[9px] text-gray-400">{Math.round((milestonesCompleted / totalMilestones) * 100)}% of total</p>
+                  <p className="text-[9px] text-gray-400">{Math.round((milestonesCompleted / totalMilestones) * 100)}% {t('ms.ofTotal')}</p>
                 </div>
               </div>
             </div>
@@ -178,7 +191,7 @@ export function MilestoneView() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1">
-                    <p className="text-[10px] text-gray-500 font-medium">On Track</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{t('ms.onTrack')}</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -187,15 +200,15 @@ export function MilestoneView() {
                       />
                       {activeTooltip === 'onTrack' && (
                         <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                          <div className="font-semibold mb-1.5">How it's calculated:</div>
-                          <div className="text-gray-200">Milestones progressing as planned with no impediments, expected to complete by target date.</div>
+                          <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                          <div className="text-gray-200">{t('ms.tooltip.onTrack')}</div>
                           <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                         </div>
                       )}
                     </div>
                   </div>
                   <p className="text-xl font-bold text-blue-600 leading-tight">{milestonesOnTrack}</p>
-                  <p className="text-[9px] text-gray-400">{Math.round((milestonesOnTrack / totalMilestones) * 100)}% of total</p>
+                  <p className="text-[9px] text-gray-400">{Math.round((milestonesOnTrack / totalMilestones) * 100)}% {t('ms.ofTotal')}</p>
                 </div>
               </div>
             </div>
@@ -207,7 +220,7 @@ export function MilestoneView() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1">
-                    <p className="text-[10px] text-gray-500 font-medium">At Risk</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{t('ms.atRisk')}</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -216,15 +229,15 @@ export function MilestoneView() {
                       />
                       {activeTooltip === 'atRisk' && (
                         <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                          <div className="font-semibold mb-1.5">How it's calculated:</div>
-                          <div className="text-gray-200">Milestones facing potential delays due to dependencies, resource issues, or scope changes that may impact timeline.</div>
+                          <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                          <div className="text-gray-200">{t('ms.tooltip.atRisk')}</div>
                           <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                         </div>
                       )}
                     </div>
                   </div>
                   <p className="text-xl font-bold text-amber-600 leading-tight">{milestonesAtRisk}</p>
-                  <p className="text-[9px] text-gray-400">{criticalPathAtRisk} critical path</p>
+                  <p className="text-[9px] text-gray-400">{criticalPathAtRisk} {t('ms.criticalPathSub')}</p>
                 </div>
               </div>
             </div>
@@ -236,7 +249,7 @@ export function MilestoneView() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1">
-                    <p className="text-[10px] text-gray-500 font-medium">Delayed</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{t('ms.delayed')}</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -245,15 +258,15 @@ export function MilestoneView() {
                       />
                       {activeTooltip === 'delayed' && (
                         <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                          <div className="font-semibold mb-1.5">How it's calculated:</div>
-                          <div className="text-gray-200">Milestones that have passed their planned date without completion, requiring immediate corrective action.</div>
+                          <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                          <div className="text-gray-200">{t('ms.tooltip.delayed')}</div>
                           <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                         </div>
                       )}
                     </div>
                   </div>
                   <p className="text-xl font-bold text-red-600 leading-tight">{milestonesDelayed}</p>
-                  <p className="text-[9px] text-gray-400">requires action</p>
+                  <p className="text-[9px] text-gray-400">{t('ms.requiresAction')}</p>
                 </div>
               </div>
             </div>
@@ -265,7 +278,7 @@ export function MilestoneView() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1">
-                    <p className="text-[10px] text-gray-500 font-medium">Upcoming</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{t('ms.upcoming')}</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -274,26 +287,25 @@ export function MilestoneView() {
                       />
                       {activeTooltip === 'upcoming' && (
                         <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                          <div className="font-semibold mb-1.5">How it's calculated:</div>
-                          <div className="text-gray-200">Milestones scheduled within the next 30 days that haven't started yet or are in early planning stages.</div>
+                          <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                          <div className="text-gray-200">{t('ms.tooltip.upcoming')}</div>
                           <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                         </div>
                       )}
                     </div>
                   </div>
                   <p className="text-xl font-bold text-gray-900 leading-tight">{milestonesUpcoming}</p>
-                  <p className="text-[9px] text-gray-400">next 30 days</p>
+                  <p className="text-[9px] text-gray-400">{t('ms.next30Days')}</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Critical Path Health Group */}
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-1 h-4 rounded-full bg-[#8A1538]"></div>
-            <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider">Critical Path Health</h3>
+            <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider">{t('ms.criticalPathHealth')}</h3>
           </div>
           <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-1.5">
             <div className="bg-white rounded-lg border-l-[3px] border-l-[#8A1538] border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
@@ -303,7 +315,7 @@ export function MilestoneView() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1">
-                    <p className="text-[10px] text-gray-500 font-medium">Total Critical Path</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{t('ms.totalCriticalPath')}</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -312,15 +324,15 @@ export function MilestoneView() {
                       />
                       {activeTooltip === 'totalCriticalPath' && (
                         <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                          <div className="font-semibold mb-1.5">How it's calculated:</div>
-                          <div className="text-gray-200">Milestones on the critical path where any delay directly impacts project completion date.</div>
+                          <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                          <div className="text-gray-200">{t('ms.tooltip.totalCriticalPath')}</div>
                           <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                         </div>
                       )}
                     </div>
                   </div>
                   <p className="text-xl font-bold text-gray-900 leading-tight">{criticalPathCount}</p>
-                  <p className="text-[9px] text-gray-400">{Math.round((criticalPathCount / totalMilestones) * 100)}% of total</p>
+                  <p className="text-[9px] text-gray-400">{Math.round((criticalPathCount / totalMilestones) * 100)}% {t('ms.ofTotal')}</p>
                 </div>
               </div>
             </div>
@@ -332,7 +344,7 @@ export function MilestoneView() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1">
-                    <p className="text-[10px] text-gray-500 font-medium">Critical Path On Track</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{t('ms.criticalPathOnTrack')}</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -341,8 +353,8 @@ export function MilestoneView() {
                       />
                       {activeTooltip === 'criticalPathOnTrack' && (
                         <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                          <div className="font-semibold mb-1.5">How it's calculated:</div>
-                          <div className="text-gray-200">Critical path milestones progressing on schedule with no issues. Essential for on-time project delivery.</div>
+                          <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                          <div className="text-gray-200">{t('ms.tooltip.criticalPathOnTrack')}</div>
                           <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                         </div>
                       )}
@@ -350,7 +362,7 @@ export function MilestoneView() {
                   </div>
                   <p className="text-xl font-bold text-green-600 leading-tight">{criticalPathCount - criticalPathAtRisk}</p>
                   <p className="text-[9px] text-green-600">
-                    {Math.round(((criticalPathCount - criticalPathAtRisk) / criticalPathCount) * 100)}% healthy
+                    {Math.round(((criticalPathCount - criticalPathAtRisk) / criticalPathCount) * 100)}% {t('ms.healthy')}
                   </p>
                 </div>
               </div>
@@ -363,7 +375,7 @@ export function MilestoneView() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1">
-                    <p className="text-[10px] text-gray-500 font-medium">Critical Path At Risk</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{t('ms.criticalPathAtRisk')}</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -372,26 +384,25 @@ export function MilestoneView() {
                       />
                       {activeTooltip === 'criticalPathAtRisk' && (
                         <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                          <div className="font-semibold mb-1.5">How it's calculated:</div>
-                          <div className="text-gray-200">Critical path milestones that are delayed or at-risk. Immediate executive attention required to avoid project delays.</div>
+                          <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                          <div className="text-gray-200">{t('ms.tooltip.criticalPathAtRisk')}</div>
                           <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                         </div>
                       )}
                     </div>
                   </div>
                   <p className="text-xl font-bold text-red-600 leading-tight">{criticalPathAtRisk}</p>
-                  <p className="text-[9px] text-red-600">immediate action</p>
+                  <p className="text-[9px] text-red-600">{t('ms.immediateAction')}</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Delivery Performance Group */}
         <div>
           <div className="flex items-center gap-2 mb-2">
             <div className="w-1 h-4 rounded-full bg-[#8A1538]"></div>
-            <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider">Delivery Performance</h3>
+            <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider">{t('ms.deliveryPerformance')}</h3>
           </div>
           <div className="grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-1.5">
             <div className="bg-white rounded-lg border-l-[3px] border-l-green-500 border border-gray-100 shadow-sm p-2.5 hover:shadow-md transition-shadow">
@@ -401,7 +412,7 @@ export function MilestoneView() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1">
-                    <p className="text-[10px] text-gray-500 font-medium">Completion Rate</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{t('ms.completionRate')}</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -410,15 +421,15 @@ export function MilestoneView() {
                       />
                       {activeTooltip === 'completionRate' && (
                         <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                          <div className="font-semibold mb-1.5">How it's calculated:</div>
-                          <div className="text-gray-200">Formula: (Completed Milestones / Total Milestones) × 100. Measures overall milestone delivery progress.</div>
+                          <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                          <div className="text-gray-200">{t('ms.tooltip.completionRate')}</div>
                           <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                         </div>
                       )}
                     </div>
                   </div>
                   <p className="text-xl font-bold text-gray-900 leading-tight">{milestoneCompletionRate}%</p>
-                  <p className="text-[9px] text-green-600">+3% vs last month</p>
+                  <p className="text-[9px] text-green-600">{t('ms.vsLastMonth')}</p>
                 </div>
               </div>
             </div>
@@ -430,7 +441,7 @@ export function MilestoneView() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1">
-                    <p className="text-[10px] text-gray-500 font-medium">Planned YTD</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{t('ms.plannedYTD')}</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -439,15 +450,15 @@ export function MilestoneView() {
                       />
                       {activeTooltip === 'plannedYTD' && (
                         <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                          <div className="font-semibold mb-1.5">How it's calculated:</div>
-                          <div className="text-gray-200">Total number of milestones planned to be completed from January 1 to current date this year.</div>
+                          <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                          <div className="text-gray-200">{t('ms.tooltip.plannedYTD')}</div>
                           <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                         </div>
                       )}
                     </div>
                   </div>
                   <p className="text-xl font-bold text-gray-900 leading-tight">115</p>
-                  <p className="text-[9px] text-gray-400">total planned</p>
+                  <p className="text-[9px] text-gray-400">{t('ms.totalPlanned')}</p>
                 </div>
               </div>
             </div>
@@ -459,7 +470,7 @@ export function MilestoneView() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1">
-                    <p className="text-[10px] text-gray-500 font-medium">Actual YTD</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{t('ms.actualYTD')}</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -468,15 +479,15 @@ export function MilestoneView() {
                       />
                       {activeTooltip === 'actualYTD' && (
                         <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                          <div className="font-semibold mb-1.5">How it's calculated:</div>
-                          <div className="text-gray-200">Number of milestones actually completed from January 1 to current date this year.</div>
+                          <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                          <div className="text-gray-200">{t('ms.tooltip.actualYTD')}</div>
                           <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                         </div>
                       )}
                     </div>
                   </div>
                   <p className="text-xl font-bold leading-tight" style={{ color: '#8A1538' }}>105</p>
-                  <p className="text-[9px] text-amber-600">91% of planned</p>
+                  <p className="text-[9px] text-amber-600">{t('ms.ofPlanned')}</p>
                 </div>
               </div>
             </div>
@@ -488,7 +499,7 @@ export function MilestoneView() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1">
-                    <p className="text-[10px] text-gray-500 font-medium">On-Time Delivery %</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{t('ms.onTimeDelivery')}</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -497,15 +508,15 @@ export function MilestoneView() {
                       />
                       {activeTooltip === 'onTimeDelivery' && (
                         <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                          <div className="font-semibold mb-1.5">How it's calculated:</div>
-                          <div className="text-gray-200">Percentage of completed milestones delivered by or before their planned date. Higher = better delivery discipline.</div>
+                          <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                          <div className="text-gray-200">{t('ms.tooltip.onTimeDelivery')}</div>
                           <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                         </div>
                       )}
                     </div>
                   </div>
                   <p className="text-xl font-bold text-green-600 leading-tight">87%</p>
-                  <p className="text-[9px] text-green-600">+5% improvement</p>
+                  <p className="text-[9px] text-green-600">{t('ms.improvement')}</p>
                 </div>
               </div>
             </div>
@@ -517,7 +528,7 @@ export function MilestoneView() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1">
-                    <p className="text-[10px] text-gray-500 font-medium">Average Delay (Days)</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{t('ms.averageDelay')}</p>
                     <div className="relative">
                       <Info 
                         className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help transition-colors"
@@ -526,15 +537,15 @@ export function MilestoneView() {
                       />
                       {activeTooltip === 'avgDelay' && (
                         <div className="absolute left-0 top-5 z-50 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl">
-                          <div className="font-semibold mb-1.5">How it's calculated:</div>
-                          <div className="text-gray-200">Average number of days past target date for delayed milestones. Lower = better recovery capability.</div>
+                          <div className="font-semibold mb-1.5">{t('tooltip.howCalculated')}</div>
+                          <div className="text-gray-200">{t('ms.tooltip.avgDelay')}</div>
                           <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-900 transform rotate-45"></div>
                         </div>
                       )}
                     </div>
                   </div>
                   <p className="text-xl font-bold text-amber-600 leading-tight">8</p>
-                  <p className="text-[9px] text-gray-400">for delayed items</p>
+                  <p className="text-[9px] text-gray-400">{t('ms.forDelayedItems')}</p>
                 </div>
               </div>
             </div>
@@ -542,7 +553,6 @@ export function MilestoneView() {
         </div>
       </div>
 
-      {/* Tab Navigation */}
       <div className="flex gap-2 mb-5 flex-shrink-0 bg-white rounded-xl p-1.5 border border-gray-200/80 shadow-sm">
         <button
           onClick={() => setActiveTab('performance')}
@@ -553,7 +563,7 @@ export function MilestoneView() {
           }`}
         >
           <CalendarCheck className="w-4 h-4" />
-          Milestone Performance
+          {t('ms.milestonePerformance')}
         </button>
         <button
           onClick={() => setActiveTab('stage')}
@@ -564,7 +574,7 @@ export function MilestoneView() {
           }`}
         >
           <Layers className="w-4 h-4" />
-          Stage Analysis
+          {t('ms.stageAnalysis')}
         </button>
         <button
           onClick={() => setActiveTab('risk')}
@@ -575,20 +585,17 @@ export function MilestoneView() {
           }`}
         >
           <ShieldAlert className="w-4 h-4" />
-          Risk & Delays
+          {t('ms.riskDelays')}
         </button>
       </div>
 
-      {/* Tab Content */}
       <div className="flex-1 overflow-hidden">
-        {/* Milestone Performance Tab */}
         {activeTab === 'performance' && (
           <div className="h-full overflow-y-auto">
             <div className="flex flex-col gap-5 p-4">
               <div className="grid grid-cols-3 gap-4" style={{ height: '300px' }}>
-                {/* Milestone RAG Distribution */}
                 <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 h-full flex flex-col">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Milestone RAG Distribution <ChartInfoToggle description="Pie chart showing milestones by RAG status (Red/Amber/Green). Identifies the proportion of milestones that are delayed, at risk, on track, or completed." /></h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('ms.ragDistribution')} <ChartInfoToggle description={t('ms.chart.ragDistDesc')} /></h3>
                   <div className="flex-1" style={{ minHeight: 0 }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
@@ -619,12 +626,11 @@ export function MilestoneView() {
                   </div>
                 </div>
 
-                {/* Critical Path Status */}
                 <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 h-full flex flex-col">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Critical Path Status <ChartInfoToggle description="Shows the health of critical path milestones. Critical path items directly impact the project end date — at-risk items here need immediate escalation." /></h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('ms.criticalPathStatus')} <ChartInfoToggle description={t('ms.chart.critPathDesc')} /></h3>
                   <div className="flex-1 flex flex-col justify-center space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-600">Total Critical Path</span>
+                      <span className="text-xs text-gray-600">{t('ms.totalCriticalPathLabel')}</span>
                       <span className="text-lg font-bold text-gray-900">{criticalPathCount}</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
@@ -635,20 +641,19 @@ export function MilestoneView() {
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div className="bg-green-50 p-2 rounded">
-                        <p className="text-xs text-gray-600">On Track</p>
+                        <p className="text-xs text-gray-600">{t('ms.onTrack')}</p>
                         <p className="text-lg font-bold text-green-600">{criticalPathCount - criticalPathAtRisk}</p>
                       </div>
                       <div className="bg-red-50 p-2 rounded">
-                        <p className="text-xs text-gray-600">At Risk</p>
+                        <p className="text-xs text-gray-600">{t('ms.atRisk')}</p>
                         <p className="text-lg font-bold text-red-600">{criticalPathAtRisk}</p>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Milestone Completion Trend */}
                 <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 h-full flex flex-col">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Completion Trend (6 Months) <ChartInfoToggle description="Tracks planned vs actual milestone completions over 6 months. A widening gap between lines indicates growing delivery delays." /></h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('ms.completionTrend')} <ChartInfoToggle description={t('ms.chart.completionTrendDesc')} /></h3>
                   <div className="flex-1" style={{ minHeight: 0 }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={milestoneCompletionTrend}>
@@ -663,7 +668,7 @@ export function MilestoneView() {
                           </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                        <XAxis dataKey="month" tick={{ fontSize: 10 }} stroke="#6b7280" />
+                        <XAxis dataKey="month" tick={{ fontSize: 10 }} stroke="#6b7280" tickFormatter={translateMonth} />
                         <YAxis tick={{ fontSize: 10 }} stroke="#6b7280" />
                         <Tooltip 
                           contentStyle={{ 
@@ -672,6 +677,7 @@ export function MilestoneView() {
                             borderRadius: '6px',
                             fontSize: '11px'
                           }}
+                          labelFormatter={translateMonth}
                         />
                         <Legend wrapperStyle={{ fontSize: '11px' }} />
                         <Line 
@@ -679,7 +685,7 @@ export function MilestoneView() {
                           dataKey="planned" 
                           stroke="#64748b" 
                           strokeWidth={2} 
-                          name="Planned"
+                          name={t('ms.planned')}
                           dot={{ fill: '#64748b', r: 3 }}
                           fill="url(#plannedMilestoneGradient)"
                         />
@@ -688,7 +694,7 @@ export function MilestoneView() {
                           dataKey="actual" 
                           stroke="#8A1538" 
                           strokeWidth={2} 
-                          name="Actual"
+                          name={t('ms.actual')}
                           dot={{ fill: '#8A1538', r: 3 }}
                           fill="url(#actualMilestoneGradient)"
                         />
@@ -698,44 +704,43 @@ export function MilestoneView() {
                 </div>
               </div>
 
-              {/* Performance Summary Cards */}
               <div className="grid grid-cols-2 gap-4 flex-shrink-0">
                 <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Completion Metrics <ChartInfoToggle description="Key delivery metrics: planned vs actual milestones completed year-to-date, and the overall completion rate with month-over-month trend." /></h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('ms.completionMetrics')} <ChartInfoToggle description={t('ms.chart.completionMetricsDesc')} /></h3>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-gray-50 p-3 rounded">
-                      <p className="text-xs text-gray-600 mb-1">Planned YTD</p>
+                      <p className="text-xs text-gray-600 mb-1">{t('ms.plannedYTD')}</p>
                       <p className="text-2xl font-bold text-gray-900">115</p>
                     </div>
                     <div className="bg-red-50 p-3 rounded">
-                      <p className="text-xs text-gray-600 mb-1">Actual YTD</p>
+                      <p className="text-xs text-gray-600 mb-1">{t('ms.actualYTD')}</p>
                       <p className="text-2xl font-bold" style={{ color: '#8A1538' }}>105</p>
                     </div>
                     <div className="bg-green-50 p-3 rounded col-span-2">
-                      <p className="text-xs text-gray-600 mb-1">Completion Rate</p>
+                      <p className="text-xs text-gray-600 mb-1">{t('ms.completionRate')}</p>
                       <p className="text-2xl font-bold text-green-600">{milestoneCompletionRate}%</p>
-                      <p className="text-xs text-green-600 mt-1">+3% vs last month</p>
+                      <p className="text-xs text-green-600 mt-1">{t('ms.vsLastMonth')}</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Status Breakdown <ChartInfoToggle description="Count of milestones in each status category. Use this to quickly assess how many milestones need attention across the portfolio." /></h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('ms.statusBreakdown')} <ChartInfoToggle description={t('ms.chart.statusBreakdownDesc')} /></h3>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between p-2 bg-green-50 rounded">
-                      <span className="text-xs font-medium text-gray-700">Completed</span>
+                      <span className="text-xs font-medium text-gray-700">{t('ms.completed')}</span>
                       <span className="text-lg font-bold text-green-600">{milestonesCompleted}</span>
                     </div>
                     <div className="flex items-center justify-between p-2 bg-blue-50 rounded">
-                      <span className="text-xs font-medium text-gray-700">On Track</span>
+                      <span className="text-xs font-medium text-gray-700">{t('ms.onTrack')}</span>
                       <span className="text-lg font-bold text-blue-600">{milestonesOnTrack}</span>
                     </div>
                     <div className="flex items-center justify-between p-2 bg-amber-50 rounded">
-                      <span className="text-xs font-medium text-gray-700">At Risk</span>
+                      <span className="text-xs font-medium text-gray-700">{t('ms.atRisk')}</span>
                       <span className="text-lg font-bold text-amber-600">{milestonesAtRisk}</span>
                     </div>
                     <div className="flex items-center justify-between p-2 bg-red-50 rounded">
-                      <span className="text-xs font-medium text-gray-700">Delayed</span>
+                      <span className="text-xs font-medium text-gray-700">{t('ms.delayed')}</span>
                       <span className="text-lg font-bold text-red-600">{milestonesDelayed}</span>
                     </div>
                   </div>
@@ -745,14 +750,12 @@ export function MilestoneView() {
           </div>
         )}
 
-        {/* Stage Analysis Tab */}
         {activeTab === 'stage' && (
           <div className="h-full overflow-y-auto">
             <div className="flex flex-col gap-5 p-4">
               <div className="grid grid-cols-2 gap-4">
-                {/* PMO Cycle Stage Distribution */}
                 <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 flex flex-col" style={{ height: '300px' }}>
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">PMO Cycle Stage Distribution <ChartInfoToggle description="Stacked bar chart showing milestone status distribution across each PMO lifecycle stage. Helps identify which stages have the most delivery risk." /></h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('ms.pmoCycleStageDistribution')} <ChartInfoToggle description={t('ms.chart.stageDistDesc')} /></h3>
                   <div className="flex-1" style={{ minHeight: 0 }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={stageChartData}>
@@ -782,62 +785,60 @@ export function MilestoneView() {
                           }}
                         />
                         <Legend wrapperStyle={{ fontSize: '11px' }} />
-                        <Bar dataKey="Completed" stackId="a" fill="url(#milestoneCompletedGradient)" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="On Track" stackId="a" fill="url(#milestoneOnTrackGradient)" radius={[0, 0, 0, 0]} />
-                        <Bar dataKey="At Risk" stackId="a" fill="url(#milestoneAtRiskGradient)" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="Completed" name={t('ms.completed')} stackId="a" fill="url(#milestoneCompletedGradient)" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="On Track" name={t('ms.onTrack')} stackId="a" fill="url(#milestoneOnTrackGradient)" radius={[0, 0, 0, 0]} />
+                        <Bar dataKey="At Risk" name={t('ms.atRisk')} stackId="a" fill="url(#milestoneAtRiskGradient)" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
                 </div>
 
-                {/* Stage Definitions */}
                 <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 flex flex-col" style={{ height: '300px' }}>
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm">PMO Stage Definitions</h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm">{t('ms.pmoStageDefinitions')}</h3>
                   <div className="flex-1 overflow-y-auto space-y-2">
                     <div className="p-2.5 bg-blue-50 rounded">
-                      <span className="font-semibold text-blue-900 text-sm">Initiation</span>
-                      <p className="text-xs text-blue-700 mt-0.5">Requirements gathering & project approval</p>
+                      <span className="font-semibold text-blue-900 text-sm">{t('ms.initiation')}</span>
+                      <p className="text-xs text-blue-700 mt-0.5">{t('ms.initiationDesc')}</p>
                     </div>
                     <div className="p-2.5 bg-purple-50 rounded">
-                      <span className="font-semibold text-purple-900 text-sm">Planning</span>
-                      <p className="text-xs text-purple-700 mt-0.5">Design phase & resource allocation</p>
+                      <span className="font-semibold text-purple-900 text-sm">{t('ms.planning')}</span>
+                      <p className="text-xs text-purple-700 mt-0.5">{t('ms.planningDesc')}</p>
                     </div>
                     <div className="p-2.5 bg-green-50 rounded">
-                      <span className="font-semibold text-green-900 text-sm">Execution</span>
-                      <p className="text-xs text-green-700 mt-0.5">Development & delivery phase</p>
+                      <span className="font-semibold text-green-900 text-sm">{t('ms.execution')}</span>
+                      <p className="text-xs text-green-700 mt-0.5">{t('ms.executionDesc')}</p>
                     </div>
                     <div className="p-2.5 bg-amber-50 rounded">
-                      <span className="font-semibold text-amber-900 text-sm">Monitoring</span>
-                      <p className="text-xs text-amber-700 mt-0.5">Testing & validation phase</p>
+                      <span className="font-semibold text-amber-900 text-sm">{t('ms.monitoring')}</span>
+                      <p className="text-xs text-amber-700 mt-0.5">{t('ms.monitoringDesc')}</p>
                     </div>
                     <div className="p-2.5 bg-gray-100 rounded">
-                      <span className="font-semibold text-gray-900 text-sm">Closure</span>
-                      <p className="text-xs text-gray-700 mt-0.5">Go-live & handover to operations</p>
+                      <span className="font-semibold text-gray-900 text-sm">{t('ms.closure')}</span>
+                      <p className="text-xs text-gray-700 mt-0.5">{t('ms.closureDesc')}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Stage Details Table */}
               <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5">
-                <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">PMO Stage Breakdown <ChartInfoToggle description="Detailed table showing milestone counts by status for each PMO stage, with health percentage calculated from on-track milestones." /></h3>
+                <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('ms.pmoStageBreakdown')} <ChartInfoToggle description={t('ms.chart.stageBreakdownDesc')} /></h3>
                 <div className="overflow-hidden rounded-lg border border-gray-100">
                   <table className="w-full text-xs">
                     <thead>
                       <tr className="bg-gradient-to-r from-gray-50 to-gray-100/50">
-                        <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Stage</th>
-                        <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Total</th>
-                        <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Completed</th>
-                        <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">On Track</th>
-                        <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">At Risk</th>
-                        <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Health %</th>
+                        <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('ms.stageCol')}</th>
+                        <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('ms.totalCol')}</th>
+                        <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('ms.completedCol')}</th>
+                        <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('ms.onTrackCol')}</th>
+                        <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('ms.atRiskCol')}</th>
+                        <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('ms.healthPctCol')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {stageDistribution.map(stage => (
                         <tr key={stage.stage} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                           <td className="py-2 font-medium text-gray-900">
-                            {stage.stage.charAt(0).toUpperCase() + stage.stage.slice(1)}
+                            {stageNameMap[stage.stage] || stage.stage.charAt(0).toUpperCase() + stage.stage.slice(1)}
                           </td>
                           <td className="text-center text-gray-700">{stage.count}</td>
                           <td className="text-center">
@@ -868,14 +869,12 @@ export function MilestoneView() {
           </div>
         )}
 
-        {/* Risk & Delays Tab */}
         {activeTab === 'risk' && (
           <div className="h-full overflow-y-auto">
             <div className="flex flex-col gap-5 p-4">
               <div className="grid grid-cols-2 gap-4">
-                {/* At Risk by Department */}
                 <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 flex flex-col" style={{ height: '300px' }}>
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">At Risk by Department <ChartInfoToggle description="Bar chart comparing at-risk and critical path milestone counts by department. Identifies which departments carry the highest delivery risk." /></h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('ms.atRiskByDepartment')} <ChartInfoToggle description={t('ms.chart.atRiskByDeptDesc')} /></h3>
                   <div className="flex-1" style={{ minHeight: 0 }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={atRiskByDepartment} barCategoryGap="20%">
@@ -902,23 +901,22 @@ export function MilestoneView() {
                           }}
                         />
                         <Legend wrapperStyle={{ fontSize: '11px' }} />
-                        <Bar dataKey="count" fill="url(#milestoneAtRiskBarGradient)" radius={[4, 4, 0, 0]} name="At Risk" />
-                        <Bar dataKey="criticalPath" fill="url(#milestoneCriticalBarGradient)" radius={[4, 4, 0, 0]} name="Critical Path" />
+                        <Bar dataKey="count" fill="url(#milestoneAtRiskBarGradient)" radius={[4, 4, 0, 0]} name={t('ms.atRisk')} />
+                        <Bar dataKey="criticalPath" fill="url(#milestoneCriticalBarGradient)" radius={[4, 4, 0, 0]} name={t('ms.criticalPathCol')} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
                 </div>
 
-                {/* Risk Alert Card */}
                 <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 flex flex-col" style={{ height: '300px' }}>
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Risk Summary <ChartInfoToggle description="High-level risk dashboard showing critical path milestones at risk and total delayed milestones requiring immediate management attention." /></h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('ms.riskSummary')} <ChartInfoToggle description={t('ms.chart.riskSummaryDesc')} /></h3>
                   <div className="flex-1 flex flex-col justify-center space-y-4">
                     <div className="p-4 bg-red-50 rounded-lg border-2 border-red-200">
                       <div className="flex items-center gap-3">
                         <AlertTriangle className="w-8 h-8 text-red-600" />
                         <div>
                           <p className="text-2xl font-bold text-red-600">{criticalPathAtRisk}</p>
-                          <p className="text-xs text-red-700">Critical Path Milestones At Risk</p>
+                          <p className="text-xs text-red-700">{t('ms.critPathMilestonesAtRisk')}</p>
                         </div>
                       </div>
                     </div>
@@ -927,33 +925,31 @@ export function MilestoneView() {
                         <Clock className="w-8 h-8 text-amber-600" />
                         <div>
                           <p className="text-2xl font-bold text-amber-600">{milestonesDelayed}</p>
-                          <p className="text-xs text-amber-700">Delayed Milestones</p>
+                          <p className="text-xs text-amber-700">{t('ms.delayedMilestonesLabel')}</p>
                         </div>
                       </div>
                     </div>
                     <div className="p-3 bg-amber-50 rounded border border-amber-200">
                       <p className="text-xs text-amber-900">
-                        <span className="font-semibold">⚠️ Action Required:</span> Immediate attention needed for {criticalPathAtRisk} critical path milestones to avoid project delays.
+                        <span className="font-semibold">{t('ms.actionRequired')}</span> {t('ms.actionRequiredText1')} {criticalPathAtRisk} {t('ms.actionRequiredText2')}
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Risk Tables Row */}
               <div className="grid grid-cols-2 gap-4 flex-shrink-0">
-                {/* Top 10 Delayed Milestones */}
                 <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Top 10 Delayed Milestones <ChartInfoToggle description="Lists the most critical delayed milestones with their project, stage, critical path status, and owner. Prioritize action on critical path items first." /></h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('ms.top10Delayed')} <ChartInfoToggle description={t('ms.chart.top10DelayedDesc')} /></h3>
                   <div className="overflow-hidden rounded-lg border border-gray-100">
                     <table className="w-full text-xs">
                       <thead>
                         <tr className="bg-gradient-to-r from-gray-50 to-gray-100/50">
-                          <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Milestone</th>
-                          <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Project</th>
-                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Stage</th>
-                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Critical</th>
-                          <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Owner</th>
+                          <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('ms.milestoneCol')}</th>
+                          <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('ms.projectCol')}</th>
+                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('ms.stageCol')}</th>
+                          <th className="text-center py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('ms.criticalCol')}</th>
+                          <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('ms.ownerCol')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -975,7 +971,7 @@ export function MilestoneView() {
                             </td>
                             <td className="text-center">
                               <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                                {milestone.stage}
+                                {stageNameMap[milestone.stage] || milestone.stage}
                               </span>
                             </td>
                             <td className="text-center">
@@ -997,17 +993,16 @@ export function MilestoneView() {
                   </div>
                 </div>
 
-                {/* Milestones At Risk by Department */}
                 <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Milestones At Risk by Department <ChartInfoToggle description="Department-level breakdown showing at-risk counts, critical path items, and percentage of total at-risk milestones per department." /></h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('ms.atRiskByDeptTable')} <ChartInfoToggle description={t('ms.chart.atRiskByDeptTableDesc')} /></h3>
                   <div className="overflow-hidden rounded-lg border border-gray-100">
                     <table className="w-full text-xs">
                       <thead>
                         <tr className="bg-gradient-to-r from-gray-50 to-gray-100/50">
-                          <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Department</th>
-                          <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">At Risk</th>
-                          <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">Critical Path</th>
-                          <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">% of Total</th>
+                          <th className="text-left py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('ms.departmentCol')}</th>
+                          <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('ms.atRiskCol')}</th>
+                          <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('ms.criticalPathCol')}</th>
+                          <th className="text-right py-2.5 px-3 font-semibold text-gray-700 text-[11px] uppercase tracking-wider">{t('ms.pctOfTotalCol')}</th>
                         </tr>
                       </thead>
                       <tbody>

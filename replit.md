@@ -37,6 +37,7 @@ A comprehensive, enterprise-grade Portfolio Management Office (PMO) dashboard fo
 - Project Details View: Task-level bottleneck identification with governance section
 - Component Library: Design system showcase
 - **Interactive Filters:** All three drill-down pages (Portfolio Deep Dive, Project Manager, Project Details) have a shared FilterBar that filters by Portfolio, Program, Status, Project Manager, and Strategic Initiative. The `filterProjects` utility in `FilterBar.tsx` handles filtering logic centrally. Empty filter results show a clear empty-state message.
+- **Full Arabic i18n (Executive Overview):** Complete Arabic translation of the entire Executive Overview page (both Portfolio View and Milestone View) activated via the Arabic toggle in the header. Every label, KPI, chart title, chart legend, table header, tooltip description, tab name, status badge, stage name/description, and month name is translated. Translation keys are organized in LanguageContext.tsx under `exec.*`, `ms.*`, `tooltip.*`, `chart.*`, `month.*`, and `statusBadge.*` namespaces. Chart legends use `name` prop for translation; chart x-axes use `tickFormatter` for month localization. RTL layout is handled globally via `dir="rtl"` on `<html>`.
 
 ## Visual Design System
 - **DashboardHeader**: Gradient background (`from-[#8A1538] via-[#a91d47]`), white text, localized date/time "Last Updated" display, language-aware (en-US/ar-SA)
