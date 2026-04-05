@@ -11,6 +11,7 @@ import { AlertTriangle, Users, TrendingUp, Info, Target } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useState } from 'react';
 import { InfoTooltip } from '../components/InfoTooltip';
+import { ChartInfoToggle } from '../components/ChartInfoToggle';
 
 export function PortfolioDeepDive() {
   const { t } = useLanguage();
@@ -206,7 +207,7 @@ export function PortfolioDeepDive() {
         <div className="grid grid-cols-2 gap-3 mb-3">
           {/* Portfolio Status Overview */}
           <div className="bg-white rounded-lg border border-gray-200 p-3">
-            <h3 className="font-semibold text-gray-900 mb-3 text-sm">Portfolio Status</h3>
+            <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Portfolio Status <ChartInfoToggle description="Pie chart showing the distribution of projects by status. Quickly identifies the proportion of on-track vs at-risk and critical projects in the portfolio." /></h3>
             <div className="flex items-center gap-4">
               <div className="flex-1">
                 <ResponsiveContainer width="100%" height={200}>
@@ -251,7 +252,7 @@ export function PortfolioDeepDive() {
 
           {/* Budget by Status */}
           <div className="bg-white rounded-lg border border-gray-200 p-3">
-            <h3 className="font-semibold text-gray-900 mb-2 text-sm">Budget by Status</h3>
+            <h3 className="font-semibold text-gray-900 mb-2 text-sm flex items-center justify-between">Budget by Status <ChartInfoToggle description="Bar chart showing total budget allocation grouped by project status. Reveals how much funding is tied to at-risk or critical projects." /></h3>
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={budgetByStatus}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -274,7 +275,7 @@ export function PortfolioDeepDive() {
 
         {/* Resource Utilization */}
         <div className="bg-white rounded-lg border border-gray-200 p-3 mb-3">
-          <h3 className="font-semibold text-gray-900 mb-2 text-sm">Resource Utilization (Top 8 Roles)</h3>
+          <h3 className="font-semibold text-gray-900 mb-2 text-sm flex items-center justify-between">Resource Utilization (Top 8 Roles) <ChartInfoToggle description="Horizontal bar chart showing staff utilization by role. Values above 100% indicate overallocation; below 70% may suggest underutilization." /></h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={utilizationData} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -305,6 +306,7 @@ export function PortfolioDeepDive() {
             <h3 className="font-semibold text-gray-900 mb-2 text-sm flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-red-500" />
               Projects Needing Attention
+              <span className="ml-auto"><ChartInfoToggle description="Lists projects with at-risk or critical status, showing their classification, budget, and open risk count. Click a project name to see full details." /></span>
             </h3>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
@@ -356,6 +358,7 @@ export function PortfolioDeepDive() {
             <h3 className="font-semibold text-gray-900 mb-2 text-sm flex items-center gap-2">
               <Users className="w-4 h-4 text-red-500" />
               Resource Constraints
+              <span className="ml-auto"><ChartInfoToggle description="Shows over-allocated resources (utilization > 100%). Lists each role, its current utilization percentage, and allocated vs available headcount." /></span>
             </h3>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">

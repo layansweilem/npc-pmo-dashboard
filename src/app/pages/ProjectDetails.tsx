@@ -10,6 +10,7 @@ import {
 import { 
   AlertCircle, Clock, CheckCircle, User, Calendar, TrendingDown, Info, Shield, Link2, Users 
 } from 'lucide-react';
+import { ChartInfoToggle } from '../components/ChartInfoToggle';
 
 export function ProjectDetails() {
   const [searchParams] = useSearchParams();
@@ -169,6 +170,7 @@ export function ProjectDetails() {
             <h3 className="font-semibold text-gray-900 mb-2 text-sm flex items-center gap-2">
               <TrendingDown className="w-4 h-4" />
               Sprint Burndown (14 Days)
+              <span className="ml-auto"><ChartInfoToggle description="Shows remaining work (story points) over the current 14-day sprint. The ideal line shows expected pace; actual line shows real progress. Actual above ideal means behind schedule." /></span>
             </h3>
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={burndownData}>
@@ -191,7 +193,7 @@ export function ProjectDetails() {
 
           {/* Task Status Breakdown */}
           <div className="bg-white rounded-lg border border-gray-200 p-3">
-            <h3 className="font-semibold text-gray-900 mb-2 text-sm">Task Status ({totalTasks} total)</h3>
+            <h3 className="font-semibold text-gray-900 mb-2 text-sm flex items-center justify-between">Task Status ({totalTasks} total) <ChartInfoToggle description="Progress bars showing the breakdown of all tasks by status: To Do, In Progress, In Review, and Done. Tracks overall task completion rate." /></h3>
             <div className="space-y-2">
               {taskBreakdown.map(item => (
                 <div key={item.status}>
@@ -226,6 +228,7 @@ export function ProjectDetails() {
             <h3 className="font-semibold text-gray-900 mb-2 text-sm flex items-center gap-2">
               <User className="w-4 h-4" />
               Team Capacity
+              <span className="ml-auto"><ChartInfoToggle description="Shows task allocation vs capacity for each team member. Red indicates overallocation, amber means at capacity, and green shows availability for more work." /></span>
             </h3>
             <div className="space-y-2">
               {teamMembers.map(member => (
@@ -269,6 +272,7 @@ export function ProjectDetails() {
             <span className="text-xs text-gray-500 font-normal ml-1">
               {project.classification.dgCode} · {project.classification.nscCode}
             </span>
+            <span className="ml-auto"><ChartInfoToggle description="Project governance details including classification type (National/International), stakeholders (internal and external), and key financial attributes like financial source and strategic alignment." /></span>
           </h3>
           <div className="grid grid-cols-3 gap-3">
             <div>
@@ -337,6 +341,7 @@ export function ProjectDetails() {
             <h3 className="font-semibold text-gray-900 mb-2 text-sm flex items-center gap-2">
               <AlertCircle className="w-4 h-4 text-red-500" />
               Blocked Tasks (Action Required)
+              <span className="ml-auto"><ChartInfoToggle description="Tasks currently blocked and requiring immediate attention. Shows what is blocking each task, who is assigned, how long it's been blocked, and priority level." /></span>
             </h3>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
@@ -377,6 +382,7 @@ export function ProjectDetails() {
             <h3 className="font-semibold text-gray-900 mb-2 text-sm flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               Recent Change History
+              <span className="ml-auto"><ChartInfoToggle description="Timeline of recent changes to the project including scope changes, budget adjustments, and schedule modifications with the person who made each change." /></span>
             </h3>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">

@@ -12,6 +12,7 @@ import { useMemo, useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MilestoneView } from './MilestoneView';
 import { InfoTooltip } from '../components/InfoTooltip';
+import { ChartInfoToggle } from '../components/ChartInfoToggle';
 
 export function ExecutiveOverview() {
   const { t, language, toggleLanguage } = useLanguage();
@@ -736,7 +737,7 @@ export function ExecutiveOverview() {
                 <div className="grid grid-cols-3 gap-4" style={{ height: '280px' }}>
                   {/* Status Distribution */}
                   <div className="bg-white rounded-lg border border-gray-200 p-4 h-full flex flex-col">
-                    <h3 className="font-semibold text-gray-900 mb-3 text-sm">Status Distribution</h3>
+                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Status Distribution <ChartInfoToggle description="Shows the breakdown of all projects by their current status (On Track, At Risk, Critical, Completed). Helps identify the overall health of the portfolio at a glance." /></h3>
                     <div className="flex-1" style={{ minHeight: 0 }}>
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
@@ -762,7 +763,7 @@ export function ExecutiveOverview() {
 
                   {/* SPI & CPI Trend */}
                   <div className="bg-white rounded-lg border border-gray-200 p-4 h-full flex flex-col">
-                    <h3 className="font-semibold text-gray-900 mb-3 text-sm">SPI & CPI Trend (6 Months)</h3>
+                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">SPI & CPI Trend (6 Months) <ChartInfoToggle description="Tracks Schedule Performance Index (SPI) and Cost Performance Index (CPI) over the last 6 months. Values above 1.0 indicate ahead of schedule/under budget; below 1.0 means behind schedule/over budget." /></h3>
                     <div className="flex-1" style={{ minHeight: 0 }}>
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={portfolioTrends}>
@@ -813,7 +814,7 @@ export function ExecutiveOverview() {
 
                   {/* Strategic Alignment */}
                   <div className="bg-white rounded-lg border border-gray-200 p-4 h-full flex flex-col">
-                    <h3 className="font-semibold text-gray-900 mb-3 text-sm">Strategic Alignment %</h3>
+                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Strategic Alignment % <ChartInfoToggle description="Measures how well the portfolio aligns with each strategic initiative. Higher percentages indicate stronger alignment between projects and organizational goals." /></h3>
                     <div className="flex-1" style={{ minHeight: 0 }}>
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={initiativeChartData} layout="vertical">
@@ -845,7 +846,7 @@ export function ExecutiveOverview() {
                 <div className="grid grid-cols-2 gap-4 flex-shrink-0">
                   {/* Top 5 Over-Budget Projects */}
                   <div className="bg-white rounded-lg border border-gray-200 p-4">
-                    <h3 className="font-semibold text-gray-900 mb-3 text-sm">Top 5 Over-Budget Projects</h3>
+                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Top 5 Over-Budget Projects <ChartInfoToggle description="Lists the top 5 projects with the largest budget overruns, showing budget vs forecast variance. These projects need immediate financial review." /></h3>
                     <div className="overflow-hidden">
                       <table className="w-full text-xs">
                         <thead>
@@ -896,7 +897,7 @@ export function ExecutiveOverview() {
 
                   {/* Top 5 Delayed Projects */}
                   <div className="bg-white rounded-lg border border-gray-200 p-4">
-                    <h3 className="font-semibold text-gray-900 mb-3 text-sm">Top 5 Delayed Projects</h3>
+                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Top 5 Delayed Projects <ChartInfoToggle description="Lists the top 5 projects with the most schedule delays based on SPI. Lower SPI indicates greater schedule slippage requiring corrective action." /></h3>
                     <div className="overflow-hidden">
                       <table className="w-full text-xs">
                         <thead>
@@ -958,7 +959,7 @@ export function ExecutiveOverview() {
                 <div className="grid grid-cols-3 gap-4" style={{ height: '400px' }}>
                   {/* PMO Stage Distribution */}
                   <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col col-span-2">
-                    <h3 className="font-semibold text-gray-900 mb-3 text-sm">PMO Cycle Stage Distribution</h3>
+                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">PMO Cycle Stage Distribution <ChartInfoToggle description="Shows milestone distribution across PMO lifecycle stages (Initiation through Closure). Each bar is stacked by status: Completed, On Track, and At Risk." /></h3>
                     <div className="flex-1 min-h-0">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={stageChartData}>
@@ -998,7 +999,7 @@ export function ExecutiveOverview() {
 
                   {/* Milestone Status Summary */}
                   <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col">
-                    <h3 className="font-semibold text-gray-900 mb-3 text-sm">Milestone Status Summary</h3>
+                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Milestone Status Summary <ChartInfoToggle description="Quick overview of milestone counts by status: Completed, On Track, At Risk, and Delayed. Provides an at-a-glance view of delivery health." /></h3>
                     <div className="flex-1 flex flex-col justify-center space-y-4">
                       <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                         <span className="text-sm font-medium text-gray-700">Completed</span>
@@ -1022,7 +1023,7 @@ export function ExecutiveOverview() {
 
                 {/* Stage Details Table */}
                 <div className="bg-white rounded-lg border border-gray-200 p-4 flex-shrink-0">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm">PMO Stage Breakdown</h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">PMO Stage Breakdown <ChartInfoToggle description="Detailed table showing milestone health per PMO stage, including completed, on track, and at risk counts with health percentage." /></h3>
                   <div className="overflow-hidden">
                     <table className="w-full text-xs">
                       <thead>
@@ -1075,7 +1076,7 @@ export function ExecutiveOverview() {
                 <div className="grid grid-cols-2 gap-4" style={{ height: '400px' }}>
                   {/* Department Health Status */}
                   <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col">
-                    <h3 className="font-semibold text-gray-900 mb-3 text-sm">Department Health Status</h3>
+                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Department Health Status <ChartInfoToggle description="Stacked bar chart showing project status distribution per department. Identifies which departments have the most critical or at-risk projects." /></h3>
                     <div className="flex-1 min-h-0">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={departmentChartData}>
@@ -1115,7 +1116,7 @@ export function ExecutiveOverview() {
 
                   {/* Department Budget Utilization */}
                   <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col">
-                    <h3 className="font-semibold text-gray-900 mb-3 text-sm">Department Budget Utilization ($M)</h3>
+                    <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Department Budget Utilization ($M) <ChartInfoToggle description="Compares allocated budget vs actual spend for each department. Helps identify departments that are overspending or underspending their budgets." /></h3>
                     <div className="flex-1 min-h-0">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={departmentBudgetData} layout="horizontal">
@@ -1151,7 +1152,7 @@ export function ExecutiveOverview() {
 
                 {/* Department Details Table */}
                 <div className="bg-white rounded-lg border border-gray-200 p-4 flex-shrink-0">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm">Department Portfolio Summary</h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Department Portfolio Summary <ChartInfoToggle description="Comprehensive table with project counts, status breakdown, budget allocation, spend, and health percentage for each department." /></h3>
                   <div className="overflow-hidden">
                     <table className="w-full text-xs">
                       <thead>

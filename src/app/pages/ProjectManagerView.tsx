@@ -13,6 +13,7 @@ import {
   TrendingUp, TrendingDown, DollarSign, Calendar, 
   AlertCircle, CheckCircle, Clock 
 } from 'lucide-react';
+import { ChartInfoToggle } from '../components/ChartInfoToggle';
 
 export function ProjectManagerView() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -181,7 +182,7 @@ export function ProjectManagerView() {
         <div className="grid grid-cols-2 gap-3 mb-3">
           {/* Progress Tracking */}
           <div className="bg-white rounded-lg border border-gray-200 p-3">
-            <h3 className="font-semibold text-gray-900 mb-2 text-sm">Progress Tracking (6 Weeks)</h3>
+            <h3 className="font-semibold text-gray-900 mb-2 text-sm flex items-center justify-between">Progress Tracking (6 Weeks) <ChartInfoToggle description="Line chart comparing planned vs actual progress over the last 6 weeks. A growing gap between lines signals schedule deviation requiring corrective action." /></h3>
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={progressData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -204,7 +205,7 @@ export function ProjectManagerView() {
 
           {/* Budget Breakdown */}
           <div className="bg-white rounded-lg border border-gray-200 p-3">
-            <h3 className="font-semibold text-gray-900 mb-2 text-sm">Budget Breakdown ($M)</h3>
+            <h3 className="font-semibold text-gray-900 mb-2 text-sm flex items-center justify-between">Budget Breakdown ($M) <ChartInfoToggle description="Bar chart showing the budget breakdown: allocated budget, actual spend, and remaining funds. Helps track financial health of the selected project." /></h3>
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={budgetData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -234,6 +235,7 @@ export function ProjectManagerView() {
             <h3 className="font-semibold text-gray-900 mb-2 text-sm flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               Milestones
+              <span className="ml-auto"><ChartInfoToggle description="Lists the next 5 milestones for this project with their planned dates, actual dates, and completion status." /></span>
             </h3>
             <div className="space-y-2">
               {milestones.slice(0, 5).map(milestone => (
@@ -260,6 +262,7 @@ export function ProjectManagerView() {
             <h3 className="font-semibold text-gray-900 mb-2 text-sm flex items-center gap-2">
               <AlertCircle className="w-4 h-4 text-red-500" />
               Top Risks
+              <span className="ml-auto"><ChartInfoToggle description="Highest-impact risks for this project. Each risk shows its severity level and assigned risk owner responsible for mitigation." /></span>
             </h3>
             <div className="space-y-2">
               {projectRisks.map(risk => (
@@ -283,6 +286,7 @@ export function ProjectManagerView() {
             <h3 className="font-semibold text-gray-900 mb-2 text-sm flex items-center gap-2">
               <AlertCircle className="w-4 h-4 text-amber-500" />
               Top Issues
+              <span className="ml-auto"><ChartInfoToggle description="Active issues currently impacting the project. Shows priority level and assigned owner for each issue requiring resolution." /></span>
             </h3>
             <div className="space-y-2">
               {projectIssues.map(issue => (
@@ -305,7 +309,7 @@ export function ProjectManagerView() {
 
           {/* Dependencies & Change Requests */}
           <div className="bg-white rounded-lg border border-gray-200 p-3">
-            <h3 className="font-semibold text-gray-900 mb-2 text-sm">Dependencies</h3>
+            <h3 className="font-semibold text-gray-900 mb-2 text-sm flex items-center justify-between">Dependencies <ChartInfoToggle description="Lists project dependencies with their current status (blocked or resolved) and due dates. Blocked dependencies need immediate action." /></h3>
             <div className="space-y-2 mb-4">
               {dependencies.map(dep => (
                 <div key={dep.id} className="border-b border-gray-100 pb-2">
@@ -321,7 +325,7 @@ export function ProjectManagerView() {
                 </div>
               ))}
             </div>
-            <h3 className="font-semibold text-gray-900 mb-2 text-sm">Change Requests</h3>
+            <h3 className="font-semibold text-gray-900 mb-2 text-sm flex items-center justify-between">Change Requests <ChartInfoToggle description="Pending and approved change requests for this project, showing scope impact and approval status." /></h3>
             <div className="space-y-2">
               {changeRequests.map(cr => (
                 <div key={cr.id} className="border-b border-gray-100 pb-2">
@@ -340,7 +344,7 @@ export function ProjectManagerView() {
 
         {/* Action Items Table */}
         <div className="bg-white rounded-lg border border-gray-200 p-3">
-          <h3 className="font-semibold text-gray-900 mb-2 text-sm">This Week's Action Items</h3>
+          <h3 className="font-semibold text-gray-900 mb-2 text-sm flex items-center justify-between">This Week's Action Items <ChartInfoToggle description="Priority-ordered list of actions due this week with owner, due date, and current completion status. Focus on high-priority items first." /></h3>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>

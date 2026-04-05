@@ -7,6 +7,7 @@ import {
 import { Link } from 'react-router';
 import { Flag, CheckCircle2, AlertTriangle, Clock, TrendingUp, Info, CalendarCheck, Layers, ShieldAlert } from 'lucide-react';
 import { useState } from 'react';
+import { ChartInfoToggle } from '../components/ChartInfoToggle';
 
 export function MilestoneView() {
   const [activeTab, setActiveTab] = useState<'performance' | 'stage' | 'risk'>('performance');
@@ -556,7 +557,7 @@ export function MilestoneView() {
               <div className="grid grid-cols-3 gap-4" style={{ height: '300px' }}>
                 {/* Milestone RAG Distribution */}
                 <div className="bg-white rounded-lg border border-gray-200 p-4 h-full flex flex-col">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm">Milestone RAG Distribution</h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Milestone RAG Distribution <ChartInfoToggle description="Pie chart showing milestones by RAG status (Red/Amber/Green). Identifies the proportion of milestones that are delayed, at risk, on track, or completed." /></h3>
                   <div className="flex-1" style={{ minHeight: 0 }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
@@ -589,7 +590,7 @@ export function MilestoneView() {
 
                 {/* Critical Path Status */}
                 <div className="bg-white rounded-lg border border-gray-200 p-4 h-full flex flex-col">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm">Critical Path Status</h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Critical Path Status <ChartInfoToggle description="Shows the health of critical path milestones. Critical path items directly impact the project end date — at-risk items here need immediate escalation." /></h3>
                   <div className="flex-1 flex flex-col justify-center space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-gray-600">Total Critical Path</span>
@@ -616,7 +617,7 @@ export function MilestoneView() {
 
                 {/* Milestone Completion Trend */}
                 <div className="bg-white rounded-lg border border-gray-200 p-4 h-full flex flex-col">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm">Completion Trend (6 Months)</h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Completion Trend (6 Months) <ChartInfoToggle description="Tracks planned vs actual milestone completions over 6 months. A widening gap between lines indicates growing delivery delays." /></h3>
                   <div className="flex-1" style={{ minHeight: 0 }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={milestoneCompletionTrend}>
@@ -669,7 +670,7 @@ export function MilestoneView() {
               {/* Performance Summary Cards */}
               <div className="grid grid-cols-2 gap-4 flex-shrink-0">
                 <div className="bg-white rounded-lg border border-gray-200 p-4">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm">Completion Metrics</h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Completion Metrics <ChartInfoToggle description="Key delivery metrics: planned vs actual milestones completed year-to-date, and the overall completion rate with month-over-month trend." /></h3>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-gray-50 p-3 rounded">
                       <p className="text-xs text-gray-600 mb-1">Planned YTD</p>
@@ -688,7 +689,7 @@ export function MilestoneView() {
                 </div>
 
                 <div className="bg-white rounded-lg border border-gray-200 p-4">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm">Status Breakdown</h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Status Breakdown <ChartInfoToggle description="Count of milestones in each status category. Use this to quickly assess how many milestones need attention across the portfolio." /></h3>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between p-2 bg-green-50 rounded">
                       <span className="text-xs font-medium text-gray-700">Completed</span>
@@ -720,7 +721,7 @@ export function MilestoneView() {
               <div className="grid grid-cols-2 gap-4">
                 {/* PMO Cycle Stage Distribution */}
                 <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col" style={{ height: '300px' }}>
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm">PMO Cycle Stage Distribution</h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">PMO Cycle Stage Distribution <ChartInfoToggle description="Stacked bar chart showing milestone status distribution across each PMO lifecycle stage. Helps identify which stages have the most delivery risk." /></h3>
                   <div className="flex-1" style={{ minHeight: 0 }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={stageChartData}>
@@ -788,7 +789,7 @@ export function MilestoneView() {
 
               {/* Stage Details Table */}
               <div className="bg-white rounded-lg border border-gray-200 p-4">
-                <h3 className="font-semibold text-gray-900 mb-3 text-sm">PMO Stage Breakdown</h3>
+                <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">PMO Stage Breakdown <ChartInfoToggle description="Detailed table showing milestone counts by status for each PMO stage, with health percentage calculated from on-track milestones." /></h3>
                 <div className="overflow-hidden">
                   <table className="w-full text-xs">
                     <thead>
@@ -843,7 +844,7 @@ export function MilestoneView() {
               <div className="grid grid-cols-2 gap-4">
                 {/* At Risk by Department */}
                 <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col" style={{ height: '300px' }}>
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm">At Risk by Department</h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">At Risk by Department <ChartInfoToggle description="Bar chart comparing at-risk and critical path milestone counts by department. Identifies which departments carry the highest delivery risk." /></h3>
                   <div className="flex-1" style={{ minHeight: 0 }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={atRiskByDepartment} barCategoryGap="20%">
@@ -879,7 +880,7 @@ export function MilestoneView() {
 
                 {/* Risk Alert Card */}
                 <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col" style={{ height: '300px' }}>
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm">Risk Summary</h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Risk Summary <ChartInfoToggle description="High-level risk dashboard showing critical path milestones at risk and total delayed milestones requiring immediate management attention." /></h3>
                   <div className="flex-1 flex flex-col justify-center space-y-4">
                     <div className="p-4 bg-red-50 rounded-lg border-2 border-red-200">
                       <div className="flex items-center gap-3">
@@ -912,7 +913,7 @@ export function MilestoneView() {
               <div className="grid grid-cols-2 gap-4 flex-shrink-0">
                 {/* Top 10 Delayed Milestones */}
                 <div className="bg-white rounded-lg border border-gray-200 p-4">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm">Top 10 Delayed Milestones</h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Top 10 Delayed Milestones <ChartInfoToggle description="Lists the most critical delayed milestones with their project, stage, critical path status, and owner. Prioritize action on critical path items first." /></h3>
                   <div className="overflow-hidden">
                     <table className="w-full text-xs">
                       <thead>
@@ -967,7 +968,7 @@ export function MilestoneView() {
 
                 {/* Milestones At Risk by Department */}
                 <div className="bg-white rounded-lg border border-gray-200 p-4">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-sm">Milestones At Risk by Department</h3>
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">Milestones At Risk by Department <ChartInfoToggle description="Department-level breakdown showing at-risk counts, critical path items, and percentage of total at-risk milestones per department." /></h3>
                   <div className="overflow-hidden">
                     <table className="w-full text-xs">
                       <thead>
