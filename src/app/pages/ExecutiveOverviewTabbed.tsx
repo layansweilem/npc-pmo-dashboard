@@ -23,6 +23,7 @@ export function ExecutiveOverview() {
   const [sortColumn, setSortColumn] = useState<string>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
+  const [tableClassFilter, setTableClassFilter] = useState<'all' | 'National' | 'Council'>('all');
   
   const filteredProjects = useMemo(() => {
     let filtered = projects;
@@ -51,19 +52,24 @@ export function ExecutiveOverview() {
   const totalForecast = filteredProjects.reduce((sum, p) => sum + p.forecast, 0);
   const budgetVariance = totalForecast - totalBudget;
 
+  const classFilteredProjects = useMemo(() => {
+    if (tableClassFilter === 'all') return filteredProjects;
+    return filteredProjects.filter(p => p.classification.type === tableClassFilter);
+  }, [filteredProjects, tableClassFilter]);
+
   const overBudgetProjects = useMemo(() => {
-    return filteredProjects
+    return classFilteredProjects
       .filter(p => p.forecast > p.budget)
       .sort((a, b) => (b.forecast - b.budget) - (a.forecast - a.budget))
       .slice(0, 5);
-  }, [filteredProjects]);
+  }, [classFilteredProjects]);
 
   const delayedProjects = useMemo(() => {
-    return filteredProjects
+    return classFilteredProjects
       .filter(p => p.sv < 0)
       .sort((a, b) => a.sv - b.sv)
       .slice(0, 5);
-  }, [filteredProjects]);
+  }, [classFilteredProjects]);
 
   const statusData = [
     { name: t('exec.onTrack'), value: onTrack, color: '#10b981' },
@@ -842,7 +848,23 @@ export function ExecutiveOverview() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 flex-shrink-0">
+                <div className="flex-shrink-0">
+                  <div className="flex items-center gap-1.5 mb-3">
+                    {(['all', 'National', 'Council'] as const).map(filter => (
+                      <button
+                        key={filter}
+                        onClick={() => setTableClassFilter(filter)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                          tableClassFilter === filter
+                            ? 'bg-[#8A1538] text-white shadow-sm'
+                            : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                        }`}
+                      >
+                        {filter === 'all' ? t('common.all') : filter === 'National' ? t('common.national') : t('common.council')}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
                   <div className="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5">
                     <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center justify-between">{t('exec.overBudgetProjectsTitle')} <ChartInfoToggle description={t('chart.overBudgetDesc')} /></h3>
                     <div className="overflow-hidden rounded-lg border border-gray-100">
@@ -945,6 +967,7 @@ export function ExecutiveOverview() {
                         </tbody>
                       </table>
                     </div>
+                  </div>
                   </div>
                 </div>
               </div>
