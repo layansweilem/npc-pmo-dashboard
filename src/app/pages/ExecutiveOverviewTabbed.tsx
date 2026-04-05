@@ -692,35 +692,38 @@ export function ExecutiveOverview() {
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex gap-2 mb-4 flex-shrink-0 border-b-2 border-gray-200">
+          <div className="flex gap-2 mb-4 flex-shrink-0 bg-gray-50 rounded-lg p-1.5 border border-gray-200">
             <button
               onClick={() => setActiveTab('performance')}
-              className={`px-6 py-3 text-sm font-semibold transition-all duration-200 border-b-2 ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
                 activeTab === 'performance'
-                  ? 'border-[#8A1538] text-[#8A1538]'
-                  : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                  ? 'bg-gradient-to-r from-[#8A1538] to-[#a91d47] text-white shadow-md shadow-[#8A1538]/20'
+                  : 'bg-white text-gray-600 hover:text-gray-800 hover:bg-gray-100 border border-gray-200'
               }`}
             >
+              <TrendingUp className="w-4 h-4" />
               Portfolio Performance
             </button>
             <button
               onClick={() => setActiveTab('cycle')}
-              className={`px-6 py-3 text-sm font-semibold transition-all duration-200 border-b-2 ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
                 activeTab === 'cycle'
-                  ? 'border-[#8A1538] text-[#8A1538]'
-                  : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                  ? 'bg-gradient-to-r from-[#8A1538] to-[#a91d47] text-white shadow-md shadow-[#8A1538]/20'
+                  : 'bg-white text-gray-600 hover:text-gray-800 hover:bg-gray-100 border border-gray-200'
               }`}
             >
+              <Target className="w-4 h-4" />
               PMO Cycle Health
             </button>
             <button
               onClick={() => setActiveTab('department')}
-              className={`px-6 py-3 text-sm font-semibold transition-all duration-200 border-b-2 ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
                 activeTab === 'department'
-                  ? 'border-[#8A1538] text-[#8A1538]'
-                  : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                  ? 'bg-gradient-to-r from-[#8A1538] to-[#a91d47] text-white shadow-md shadow-[#8A1538]/20'
+                  : 'bg-white text-gray-600 hover:text-gray-800 hover:bg-gray-100 border border-gray-200'
               }`}
             >
+              <LayoutDashboard className="w-4 h-4" />
               Department Distribution
             </button>
           </div>

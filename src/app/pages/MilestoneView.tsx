@@ -5,7 +5,7 @@ import {
   Tooltip, ResponsiveContainer, Legend, LineChart, Line 
 } from 'recharts';
 import { Link } from 'react-router';
-import { Flag, CheckCircle2, AlertTriangle, Clock, TrendingUp, Info } from 'lucide-react';
+import { Flag, CheckCircle2, AlertTriangle, Clock, TrendingUp, Info, CalendarCheck, Layers, ShieldAlert } from 'lucide-react';
 import { useState } from 'react';
 
 export function MilestoneView() {
@@ -511,35 +511,38 @@ export function MilestoneView() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex gap-2 mb-4 flex-shrink-0 border-b-2 border-gray-200">
+      <div className="flex gap-2 mb-4 flex-shrink-0 bg-gray-50 rounded-lg p-1.5 border border-gray-200">
         <button
           onClick={() => setActiveTab('performance')}
-          className={`px-6 py-3 text-sm font-semibold transition-all duration-200 border-b-2 ${
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
             activeTab === 'performance'
-              ? 'border-[#8A1538] text-[#8A1538]'
-              : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+              ? 'bg-gradient-to-r from-[#8A1538] to-[#a91d47] text-white shadow-md shadow-[#8A1538]/20'
+              : 'bg-white text-gray-600 hover:text-gray-800 hover:bg-gray-100 border border-gray-200'
           }`}
         >
+          <CalendarCheck className="w-4 h-4" />
           Milestone Performance
         </button>
         <button
           onClick={() => setActiveTab('stage')}
-          className={`px-6 py-3 text-sm font-semibold transition-all duration-200 border-b-2 ${
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
             activeTab === 'stage'
-              ? 'border-[#8A1538] text-[#8A1538]'
-              : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+              ? 'bg-gradient-to-r from-[#8A1538] to-[#a91d47] text-white shadow-md shadow-[#8A1538]/20'
+              : 'bg-white text-gray-600 hover:text-gray-800 hover:bg-gray-100 border border-gray-200'
           }`}
         >
+          <Layers className="w-4 h-4" />
           Stage Analysis
         </button>
         <button
           onClick={() => setActiveTab('risk')}
-          className={`px-6 py-3 text-sm font-semibold transition-all duration-200 border-b-2 ${
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
             activeTab === 'risk'
-              ? 'border-[#8A1538] text-[#8A1538]'
-              : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+              ? 'bg-gradient-to-r from-[#8A1538] to-[#a91d47] text-white shadow-md shadow-[#8A1538]/20'
+              : 'bg-white text-gray-600 hover:text-gray-800 hover:bg-gray-100 border border-gray-200'
           }`}
         >
+          <ShieldAlert className="w-4 h-4" />
           Risk & Delays
         </button>
       </div>
