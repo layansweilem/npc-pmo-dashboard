@@ -15,30 +15,35 @@ import { InfoTooltip } from '../components/InfoTooltip';
 export function PortfolioDeepDive() {
   const { t } = useLanguage();
   const [tooltipVisible, setTooltipVisible] = useState<string | null>(null);
+  const [classificationFilter, setClassificationFilter] = useState<'all' | 'National' | 'Council'>('all');
   
   const showTooltip = (id: string) => setTooltipVisible(id);
   const hideTooltip = () => setTooltipVisible(null);
+
+  const filteredByClassification = classificationFilter === 'all'
+    ? projects
+    : projects.filter(p => p.classification.type === classificationFilter);
   
   // Simple status breakdown
   const statusBreakdown = [
-    { status: 'On Track', count: projects.filter(p => p.status === 'on-track').length, color: '#10b981' },
-    { status: 'At Risk', count: projects.filter(p => p.status === 'at-risk').length, color: '#f59e0b' },
-    { status: 'Critical', count: projects.filter(p => p.status === 'critical').length, color: '#ef4444' },
+    { status: 'On Track', count: filteredByClassification.filter(p => p.status === 'on-track').length, color: '#10b981' },
+    { status: 'At Risk', count: filteredByClassification.filter(p => p.status === 'at-risk').length, color: '#f59e0b' },
+    { status: 'Critical', count: filteredByClassification.filter(p => p.status === 'critical').length, color: '#ef4444' },
   ];
 
   // Budget by status (simplified)
   const budgetByStatus = [
     { 
       status: 'On Track', 
-      budget: projects.filter(p => p.status === 'on-track').reduce((sum, p) => sum + p.budget, 0) / 1000000 
+      budget: filteredByClassification.filter(p => p.status === 'on-track').reduce((sum, p) => sum + p.budget, 0) / 1000000 
     },
     { 
       status: 'At Risk', 
-      budget: projects.filter(p => p.status === 'at-risk').reduce((sum, p) => sum + p.budget, 0) / 1000000 
+      budget: filteredByClassification.filter(p => p.status === 'at-risk').reduce((sum, p) => sum + p.budget, 0) / 1000000 
     },
     { 
       status: 'Critical', 
-      budget: projects.filter(p => p.status === 'critical').reduce((sum, p) => sum + p.budget, 0) / 1000000 
+      budget: filteredByClassification.filter(p => p.status === 'critical').reduce((sum, p) => sum + p.budget, 0) / 1000000 
     },
   ];
 
@@ -55,10 +60,10 @@ export function PortfolioDeepDive() {
   const overAllocated = resourceUtilization.filter(r => r.available < 0);
 
   // High-risk projects
-  const highRiskProjects = projects.filter(p => p.openRisks >= 6);
+  const highRiskProjects = filteredByClassification.filter(p => p.openRisks >= 6);
 
   // Projects needing attention (critical or at-risk with high budget)
-  const projectsNeedingAttention = projects
+  const projectsNeedingAttention = filteredByClassification
     .filter(p => p.status === 'critical' || (p.status === 'at-risk' && p.budget > 5000000))
     .sort((a, b) => b.budget - a.budget);
 
@@ -75,6 +80,29 @@ export function PortfolioDeepDive() {
       <FilterBar />
       
       <div className="flex-1 overflow-auto p-4">
+        {/* Classification Filter */}
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-xs font-medium text-gray-600">Classification:</span>
+          {(['all', 'National', 'Council'] as const).map(filter => (
+            <button
+              key={filter}
+              onClick={() => setClassificationFilter(filter)}
+              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                classificationFilter === filter
+                  ? filter === 'National' ? 'bg-green-600 text-white' :
+                    filter === 'Council' ? 'bg-blue-600 text-white' :
+                    'bg-gray-800 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {filter === 'all' ? 'All Projects' : `${filter} Projects`}
+              <span className="ml-1 opacity-75">
+                ({filter === 'all' ? projects.length : projects.filter(p => p.classification.type === filter).length})
+              </span>
+            </button>
+          ))}
+        </div>
+
         {/* Compact Key Metrics Strip */}
         <div className="grid grid-cols-4 gap-2 mb-3">
           <div className="bg-white rounded-lg border border-gray-200 p-2 relative">
@@ -120,7 +148,7 @@ export function PortfolioDeepDive() {
               </div>
             </div>
             <p className="text-lg font-semibold text-amber-600">
-              {projects.reduce((sum, p) => sum + p.openRisks, 0)}
+              {filteredByClassification.reduce((sum, p) => sum + p.openRisks, 0)}
             </p>
             <p className="text-[9px] text-gray-500">across portfolio</p>
           </div>
@@ -168,9 +196,9 @@ export function PortfolioDeepDive() {
               </div>
             </div>
             <p className="text-lg font-semibold text-green-600">
-              {Math.round((projects.filter(p => p.status === 'on-track').length / projects.length) * 100)}%
+              {filteredByClassification.length > 0 ? Math.round((filteredByClassification.filter(p => p.status === 'on-track').length / filteredByClassification.length) * 100) : 0}%
             </p>
-            <p className="text-[9px] text-gray-500">{projects.filter(p => p.status === 'on-track').length} projects</p>
+            <p className="text-[9px] text-gray-500">{filteredByClassification.filter(p => p.status === 'on-track').length} projects</p>
           </div>
         </div>
 
@@ -284,6 +312,9 @@ export function PortfolioDeepDive() {
                   <tr className="border-b border-gray-200">
                     <th className="text-left py-2 font-medium text-gray-600">Project</th>
                     <th className="text-center py-2 font-medium text-gray-600">Status</th>
+                    <th className="text-center py-2 font-medium text-gray-600">Type</th>
+                    <th className="text-right py-2 font-medium text-gray-600">DG Code</th>
+                    <th className="text-right py-2 font-medium text-gray-600">NSC Code</th>
                     <th className="text-right py-2 font-medium text-gray-600">Budget</th>
                     <th className="text-right py-2 font-medium text-gray-600">Risks</th>
                   </tr>
@@ -302,6 +333,15 @@ export function PortfolioDeepDive() {
                       <td className="text-center">
                         <StatusBadge status={project.status} size="sm" />
                       </td>
+                      <td className="text-center">
+                        <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${
+                          project.classification.type === 'National' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                        }`}>
+                          {project.classification.type}
+                        </span>
+                      </td>
+                      <td className="text-right text-gray-700 text-xs">{project.classification.dgCode}</td>
+                      <td className="text-right text-gray-700 text-xs">{project.classification.nscCode}</td>
                       <td className="text-right text-gray-900">${(project.budget / 1000000).toFixed(1)}M</td>
                       <td className="text-right text-red-600 font-semibold">{project.openRisks}</td>
                     </tr>

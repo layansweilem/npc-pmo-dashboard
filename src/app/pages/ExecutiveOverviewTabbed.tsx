@@ -843,12 +843,20 @@ export function ExecutiveOverview() {
                               className="border-b border-gray-100 hover:bg-blue-50 transition-colors"
                             >
                               <td className="py-2">
-                                <Link 
-                                  to={`/project-details?id=${project.id}`}
-                                  className="text-blue-600 hover:underline font-medium"
-                                >
-                                  {project.name}
-                                </Link>
+                                <div className="flex items-center gap-1.5">
+                                  <Link 
+                                    to={`/project-details?id=${project.id}`}
+                                    className="text-blue-600 hover:underline font-medium"
+                                  >
+                                    {project.name}
+                                  </Link>
+                                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                                    project.classification.type === 'National' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                                  }`}>
+                                    {project.classification.type}
+                                  </span>
+                                </div>
+                                <div className="text-[10px] text-gray-400 mt-0.5">{project.classification.dgCode} · {project.classification.nscCode}</div>
                               </td>
                               <td className="text-right text-gray-900">
                                 ${(project.budget / 1000000).toFixed(1)}M
@@ -887,12 +895,20 @@ export function ExecutiveOverview() {
                               className="border-b border-gray-100 hover:bg-blue-50 transition-colors"
                             >
                               <td className="py-2">
-                                <Link 
-                                  to={`/project-details?id=${project.id}`}
-                                  className="text-blue-600 hover:underline font-medium"
-                                >
-                                  {project.name}
-                                </Link>
+                                <div className="flex items-center gap-1.5">
+                                  <Link 
+                                    to={`/project-details?id=${project.id}`}
+                                    className="text-blue-600 hover:underline font-medium"
+                                  >
+                                    {project.name}
+                                  </Link>
+                                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                                    project.classification.type === 'National' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                                  }`}>
+                                    {project.classification.type}
+                                  </span>
+                                </div>
+                                <div className="text-[10px] text-gray-400 mt-0.5">{project.classification.dgCode} · {project.classification.nscCode}</div>
                               </td>
                               <td className="text-center">
                                 <StatusBadge status={project.status} size="sm" />

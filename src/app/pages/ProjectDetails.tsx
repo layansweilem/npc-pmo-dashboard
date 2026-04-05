@@ -8,7 +8,7 @@ import {
   Tooltip, ResponsiveContainer 
 } from 'recharts';
 import { 
-  AlertCircle, Clock, CheckCircle, User, Calendar, TrendingDown, Info 
+  AlertCircle, Clock, CheckCircle, User, Calendar, TrendingDown, Info, Shield, Link2, Users 
 } from 'lucide-react';
 
 export function ProjectDetails() {
@@ -252,6 +252,80 @@ export function ProjectDetails() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Governance Section */}
+        <div className="bg-white rounded-lg border border-gray-200 p-3 mb-3">
+          <h3 className="font-semibold text-gray-900 mb-3 text-sm flex items-center gap-2">
+            <Shield className="w-4 h-4 text-indigo-500" />
+            Project Governance
+            <span className={`ml-2 px-2 py-0.5 rounded text-xs font-medium ${
+              project.classification.type === 'National' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+            }`}>
+              {project.classification.type}
+            </span>
+            <span className="text-xs text-gray-500 font-normal ml-1">
+              {project.classification.dgCode} · {project.classification.nscCode}
+            </span>
+          </h3>
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <h4 className="text-xs font-medium text-gray-700 mb-2 flex items-center gap-1">
+                <Users className="w-3 h-3" />
+                Internal Stakeholders
+              </h4>
+              <div className="space-y-1">
+                {project.stakeholders.internal.map(s => (
+                  <div key={s} className="text-xs text-gray-800 bg-gray-50 rounded px-2 py-1">{s}</div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h4 className="text-xs font-medium text-gray-700 mb-2 flex items-center gap-1">
+                <Users className="w-3 h-3" />
+                External Stakeholders
+              </h4>
+              <div className="space-y-1">
+                {project.stakeholders.external.map(s => (
+                  <div key={s} className="text-xs text-gray-800 bg-gray-50 rounded px-2 py-1">{s}</div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h4 className="text-xs font-medium text-gray-700 mb-2 flex items-center gap-1">
+                <Link2 className="w-3 h-3" />
+                Dependencies
+              </h4>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b border-gray-200">
+                      <th className="text-left py-1 font-medium text-gray-600">Project</th>
+                      <th className="text-left py-1 font-medium text-gray-600">Type</th>
+                      <th className="text-left py-1 font-medium text-gray-600">Risk</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {project.dependencies.map(dep => (
+                      <tr key={dep.projectId} className="border-b border-gray-100">
+                        <td className="py-1 text-gray-900 font-medium">{dep.projectId}</td>
+                        <td className="py-1 text-gray-700">{dep.relationship}</td>
+                        <td className="py-1">
+                          <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${
+                            dep.riskLevel === 'High' ? 'bg-red-100 text-red-700' :
+                            dep.riskLevel === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+                            'bg-green-100 text-green-700'
+                          }`}>
+                            {dep.riskLevel}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>

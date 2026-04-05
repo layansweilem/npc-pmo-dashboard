@@ -1,4 +1,21 @@
 // Mock data for PMO Dashboard
+export interface ProjectDependency {
+  projectId: string;
+  relationship: 'Sequential' | 'Parallel' | 'Blocking';
+  riskLevel: 'High' | 'Medium' | 'Low';
+}
+
+export interface ProjectClassification {
+  type: 'National' | 'Council';
+  dgCode: string;
+  nscCode: string;
+}
+
+export interface ProjectStakeholders {
+  internal: string[];
+  external: string[];
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -27,6 +44,9 @@ export interface Project {
   blockedTasks: number;
   totalTasks: number;
   completedTasks: number;
+  stakeholders: ProjectStakeholders;
+  dependencies: ProjectDependency[];
+  classification: ProjectClassification;
 }
 
 export interface Risk {
@@ -104,7 +124,20 @@ export const projects: Project[] = [
     openIssues: 1,
     blockedTasks: 0,
     totalTasks: 124,
-    completedTasks: 81
+    completedTasks: 81,
+    stakeholders: {
+        internal: ['HR Department', 'Compliance Team'],
+        external: ['Public Works Authority']
+      },
+      dependencies: [
+        { projectId: 'PRJ-009', relationship: 'Sequential', riskLevel: 'Low' },
+      { projectId: 'PRJ-032', relationship: 'Parallel', riskLevel: 'High' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-572',
+        nscCode: 'NSC-7618'
+      }
   },
   {
     id: 'PRJ-002',
@@ -132,7 +165,20 @@ export const projects: Project[] = [
     openIssues: 2,
     blockedTasks: 1,
     totalTasks: 156,
-    completedTasks: 109
+    completedTasks: 109,
+    stakeholders: {
+        internal: ['Risk Management', 'Strategy Office'],
+        external: ['Industry Partners', 'Central Bank']
+      },
+      dependencies: [
+        { projectId: 'PRJ-005', relationship: 'Blocking', riskLevel: 'Medium' },
+      { projectId: 'PRJ-017', relationship: 'Parallel', riskLevel: 'High' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-269',
+        nscCode: 'NSC-3909'
+      }
   },
   {
     id: 'PRJ-003',
@@ -160,7 +206,20 @@ export const projects: Project[] = [
     openIssues: 3,
     blockedTasks: 0,
     totalTasks: 203,
-    completedTasks: 112
+    completedTasks: 112,
+    stakeholders: {
+        internal: ['Risk Management', 'Business Development', 'Procurement', 'Marketing Division'],
+        external: ['Consulting Partners', 'Technology Vendors']
+      },
+      dependencies: [
+        { projectId: 'PRJ-023', relationship: 'Parallel', riskLevel: 'High' },
+      { projectId: 'PRJ-019', relationship: 'Sequential', riskLevel: 'Medium' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-120',
+        nscCode: 'NSC-9941'
+      }
   },
   // At-risk projects
   {
@@ -189,7 +248,21 @@ export const projects: Project[] = [
     openIssues: 5,
     blockedTasks: 4,
     totalTasks: 187,
-    completedTasks: 108
+    completedTasks: 108,
+    stakeholders: {
+        internal: ['IT Division', 'Compliance Team', 'Executive Board', 'Quality Assurance'],
+        external: ['External Auditors', 'Municipal Council']
+      },
+      dependencies: [
+        { projectId: 'PRJ-007', relationship: 'Blocking', riskLevel: 'Medium' },
+      { projectId: 'PRJ-016', relationship: 'Blocking', riskLevel: 'High' },
+      { projectId: 'PRJ-029', relationship: 'Blocking', riskLevel: 'High' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-273',
+        nscCode: 'NSC-1582'
+      }
   },
   {
     id: 'PRJ-005',
@@ -217,7 +290,21 @@ export const projects: Project[] = [
     openIssues: 7,
     blockedTasks: 3,
     totalTasks: 98,
-    completedTasks: 61
+    completedTasks: 61,
+    stakeholders: {
+        internal: ['PMO Office', 'IT Division', 'Compliance Team'],
+        external: ['Consulting Partners']
+      },
+      dependencies: [
+        { projectId: 'PRJ-010', relationship: 'Parallel', riskLevel: 'Low' },
+      { projectId: 'PRJ-017', relationship: 'Parallel', riskLevel: 'Low' },
+      { projectId: 'PRJ-035', relationship: 'Sequential', riskLevel: 'Low' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-220',
+        nscCode: 'NSC-6736'
+      }
   },
   // Critical projects (edge cases)
   {
@@ -246,7 +333,20 @@ export const projects: Project[] = [
     openIssues: 15,
     blockedTasks: 8,
     totalTasks: 312,
-    completedTasks: 150
+    completedTasks: 150,
+    stakeholders: {
+        internal: ['Legal Department', 'Marketing Division', 'Executive Board', 'Risk Management'],
+        external: ['National Planning Commission', 'Ministry of Finance']
+      },
+      dependencies: [
+        { projectId: 'PRJ-016', relationship: 'Sequential', riskLevel: 'Low' },
+      { projectId: 'PRJ-014', relationship: 'Parallel', riskLevel: 'Low' }
+      ],
+      classification: {
+        type: 'National',
+        dgCode: 'DG-768',
+        nscCode: 'NSC-6017'
+      }
   },
   {
     id: 'PRJ-007',
@@ -274,7 +374,20 @@ export const projects: Project[] = [
     openIssues: 11,
     blockedTasks: 6,
     totalTasks: 245,
-    completedTasks: 135
+    completedTasks: 135,
+    stakeholders: {
+        internal: ['Marketing Division', 'Quality Assurance', 'Compliance Team'],
+        external: ['Ministry of Finance']
+      },
+      dependencies: [
+        { projectId: 'PRJ-029', relationship: 'Parallel', riskLevel: 'High' },
+      { projectId: 'PRJ-015', relationship: 'Sequential', riskLevel: 'Low' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-485',
+        nscCode: 'NSC-3632'
+      }
   },
   // More projects for variety
   {
@@ -303,7 +416,19 @@ export const projects: Project[] = [
     openIssues: 1,
     blockedTasks: 0,
     totalTasks: 89,
-    completedTasks: 46
+    completedTasks: 46,
+    stakeholders: {
+        internal: ['Marketing Division', 'Legal Department', 'Procurement'],
+        external: ['External Auditors']
+      },
+      dependencies: [
+        { projectId: 'PRJ-035', relationship: 'Sequential', riskLevel: 'Medium' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-168',
+        nscCode: 'NSC-6378'
+      }
   },
   {
     id: 'PRJ-009',
@@ -331,7 +456,20 @@ export const projects: Project[] = [
     openIssues: 2,
     blockedTasks: 0,
     totalTasks: 132,
-    completedTasks: 87
+    completedTasks: 87,
+    stakeholders: {
+        internal: ['Legal Department', 'HR Department', 'Compliance Team'],
+        external: ['Industry Partners']
+      },
+      dependencies: [
+        { projectId: 'PRJ-019', relationship: 'Parallel', riskLevel: 'Medium' },
+      { projectId: 'PRJ-011', relationship: 'Parallel', riskLevel: 'Medium' }
+      ],
+      classification: {
+        type: 'National',
+        dgCode: 'DG-806',
+        nscCode: 'NSC-2144'
+      }
   },
   {
     id: 'PRJ-010',
@@ -359,7 +497,19 @@ export const projects: Project[] = [
     openIssues: 6,
     blockedTasks: 3,
     totalTasks: 76,
-    completedTasks: 49
+    completedTasks: 49,
+    stakeholders: {
+        internal: ['Executive Board', 'Finance Department'],
+        external: ['Consulting Partners', 'Public Works Authority']
+      },
+      dependencies: [
+        { projectId: 'PRJ-031', relationship: 'Blocking', riskLevel: 'Low' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-389',
+        nscCode: 'NSC-4173'
+      }
   },
   {
     id: 'PRJ-011',
@@ -387,7 +537,21 @@ export const projects: Project[] = [
     openIssues: 2,
     blockedTasks: 1,
     totalTasks: 145,
-    completedTasks: 86
+    completedTasks: 86,
+    stakeholders: {
+        internal: ['Strategy Office', 'Compliance Team'],
+        external: ['Consulting Partners', 'National Planning Commission']
+      },
+      dependencies: [
+        { projectId: 'PRJ-032', relationship: 'Sequential', riskLevel: 'Low' },
+      { projectId: 'PRJ-035', relationship: 'Blocking', riskLevel: 'High' },
+      { projectId: 'PRJ-013', relationship: 'Sequential', riskLevel: 'Medium' }
+      ],
+      classification: {
+        type: 'National',
+        dgCode: 'DG-309',
+        nscCode: 'NSC-5589'
+      }
   },
   {
     id: 'PRJ-012',
@@ -415,7 +579,20 @@ export const projects: Project[] = [
     openIssues: 8,
     blockedTasks: 5,
     totalTasks: 198,
-    completedTasks: 125
+    completedTasks: 125,
+    stakeholders: {
+        internal: ['Operations Team', 'Marketing Division', 'Business Development', 'Executive Board'],
+        external: ['International Advisors']
+      },
+      dependencies: [
+        { projectId: 'PRJ-016', relationship: 'Parallel', riskLevel: 'Low' },
+      { projectId: 'PRJ-018', relationship: 'Parallel', riskLevel: 'High' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-554',
+        nscCode: 'NSC-2405'
+      }
   },
   {
     id: 'PRJ-013',
@@ -443,7 +620,20 @@ export const projects: Project[] = [
     openIssues: 1,
     blockedTasks: 0,
     totalTasks: 112,
-    completedTasks: 62
+    completedTasks: 62,
+    stakeholders: {
+        internal: ['Marketing Division', 'Operations Team', 'Strategy Office'],
+        external: ['Public Works Authority']
+      },
+      dependencies: [
+        { projectId: 'PRJ-018', relationship: 'Sequential', riskLevel: 'Medium' },
+      { projectId: 'PRJ-024', relationship: 'Sequential', riskLevel: 'Low' }
+      ],
+      classification: {
+        type: 'National',
+        dgCode: 'DG-236',
+        nscCode: 'NSC-6146'
+      }
   },
   {
     id: 'PRJ-014',
@@ -471,7 +661,20 @@ export const projects: Project[] = [
     openIssues: 3,
     blockedTasks: 1,
     totalTasks: 167,
-    completedTasks: 104
+    completedTasks: 104,
+    stakeholders: {
+        internal: ['Risk Management', 'Finance Department', 'Procurement', 'Marketing Division'],
+        external: ['Public Works Authority', 'Consulting Partners']
+      },
+      dependencies: [
+        { projectId: 'PRJ-030', relationship: 'Blocking', riskLevel: 'Low' },
+      { projectId: 'PRJ-020', relationship: 'Sequential', riskLevel: 'Low' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-144',
+        nscCode: 'NSC-5135'
+      }
   },
   {
     id: 'PRJ-015',
@@ -499,7 +702,21 @@ export const projects: Project[] = [
     openIssues: 1,
     blockedTasks: 0,
     totalTasks: 128,
-    completedTasks: 74
+    completedTasks: 74,
+    stakeholders: {
+        internal: ['Internal Audit', 'Marketing Division', 'Compliance Team'],
+        external: ['Regulatory Authority', 'Public Works Authority']
+      },
+      dependencies: [
+        { projectId: 'PRJ-001', relationship: 'Sequential', riskLevel: 'Medium' },
+      { projectId: 'PRJ-020', relationship: 'Parallel', riskLevel: 'Medium' },
+      { projectId: 'PRJ-024', relationship: 'Parallel', riskLevel: 'Medium' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-654',
+        nscCode: 'NSC-1208'
+      }
   },
   {
     id: 'PRJ-016',
@@ -527,7 +744,21 @@ export const projects: Project[] = [
     openIssues: 14,
     blockedTasks: 9,
     totalTasks: 278,
-    completedTasks: 145
+    completedTasks: 145,
+    stakeholders: {
+        internal: ['IT Division', 'Executive Board', 'Compliance Team', 'Legal Department'],
+        external: ['International Advisors']
+      },
+      dependencies: [
+        { projectId: 'PRJ-014', relationship: 'Sequential', riskLevel: 'High' },
+      { projectId: 'PRJ-033', relationship: 'Parallel', riskLevel: 'Low' },
+      { projectId: 'PRJ-027', relationship: 'Blocking', riskLevel: 'High' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-797',
+        nscCode: 'NSC-8251'
+      }
   },
   {
     id: 'PRJ-017',
@@ -555,7 +786,21 @@ export const projects: Project[] = [
     openIssues: 2,
     blockedTasks: 0,
     totalTasks: 95,
-    completedTasks: 58
+    completedTasks: 58,
+    stakeholders: {
+        internal: ['Quality Assurance', 'Operations Team'],
+        external: ['Regulatory Authority']
+      },
+      dependencies: [
+        { projectId: 'PRJ-022', relationship: 'Parallel', riskLevel: 'Low' },
+      { projectId: 'PRJ-029', relationship: 'Sequential', riskLevel: 'High' },
+      { projectId: 'PRJ-024', relationship: 'Sequential', riskLevel: 'Medium' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-150',
+        nscCode: 'NSC-3663'
+      }
   },
   {
     id: 'PRJ-018',
@@ -583,7 +828,21 @@ export const projects: Project[] = [
     openIssues: 6,
     blockedTasks: 4,
     totalTasks: 156,
-    completedTasks: 95
+    completedTasks: 95,
+    stakeholders: {
+        internal: ['IT Division', 'Risk Management', 'Marketing Division'],
+        external: ['Regulatory Authority']
+      },
+      dependencies: [
+        { projectId: 'PRJ-001', relationship: 'Sequential', riskLevel: 'High' },
+      { projectId: 'PRJ-025', relationship: 'Blocking', riskLevel: 'Medium' },
+      { projectId: 'PRJ-028', relationship: 'Parallel', riskLevel: 'High' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-661',
+        nscCode: 'NSC-2078'
+      }
   },
   {
     id: 'PRJ-019',
@@ -611,7 +870,21 @@ export const projects: Project[] = [
     openIssues: 2,
     blockedTasks: 1,
     totalTasks: 142,
-    completedTasks: 84
+    completedTasks: 84,
+    stakeholders: {
+        internal: ['HR Department', 'Finance Department'],
+        external: ['Industry Partners', 'Central Bank']
+      },
+      dependencies: [
+        { projectId: 'PRJ-020', relationship: 'Parallel', riskLevel: 'Low' },
+      { projectId: 'PRJ-035', relationship: 'Sequential', riskLevel: 'Low' },
+      { projectId: 'PRJ-011', relationship: 'Parallel', riskLevel: 'Medium' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-448',
+        nscCode: 'NSC-1340'
+      }
   },
   {
     id: 'PRJ-020',
@@ -639,7 +912,20 @@ export const projects: Project[] = [
     openIssues: 1,
     blockedTasks: 0,
     totalTasks: 176,
-    completedTasks: 97
+    completedTasks: 97,
+    stakeholders: {
+        internal: ['Quality Assurance', 'Marketing Division', 'PMO Office'],
+        external: ['Public Works Authority']
+      },
+      dependencies: [
+        { projectId: 'PRJ-026', relationship: 'Blocking', riskLevel: 'Low' },
+      { projectId: 'PRJ-016', relationship: 'Parallel', riskLevel: 'High' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-461',
+        nscCode: 'NSC-6267'
+      }
   },
   {
     id: 'PRJ-021',
@@ -667,7 +953,21 @@ export const projects: Project[] = [
     openIssues: 5,
     blockedTasks: 3,
     totalTasks: 134,
-    completedTasks: 86
+    completedTasks: 86,
+    stakeholders: {
+        internal: ['Procurement', 'PMO Office', 'Finance Department', 'Compliance Team'],
+        external: ['Municipal Council', 'External Auditors']
+      },
+      dependencies: [
+        { projectId: 'PRJ-013', relationship: 'Parallel', riskLevel: 'High' },
+      { projectId: 'PRJ-005', relationship: 'Sequential', riskLevel: 'Low' },
+      { projectId: 'PRJ-027', relationship: 'Blocking', riskLevel: 'Low' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-496',
+        nscCode: 'NSC-7766'
+      }
   },
   {
     id: 'PRJ-022',
@@ -695,7 +995,21 @@ export const projects: Project[] = [
     openIssues: 2,
     blockedTasks: 1,
     totalTasks: 118,
-    completedTasks: 68
+    completedTasks: 68,
+    stakeholders: {
+        internal: ['Business Development', 'Procurement', 'HR Department'],
+        external: ['External Auditors']
+      },
+      dependencies: [
+        { projectId: 'PRJ-013', relationship: 'Blocking', riskLevel: 'Low' },
+      { projectId: 'PRJ-031', relationship: 'Parallel', riskLevel: 'High' },
+      { projectId: 'PRJ-010', relationship: 'Parallel', riskLevel: 'Low' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-515',
+        nscCode: 'NSC-6146'
+      }
   },
   {
     id: 'PRJ-023',
@@ -723,7 +1037,20 @@ export const projects: Project[] = [
     openIssues: 2,
     blockedTasks: 0,
     totalTasks: 167,
-    completedTasks: 92
+    completedTasks: 92,
+    stakeholders: {
+        internal: ['Legal Department', 'Quality Assurance'],
+        external: ['Standards Organization']
+      },
+      dependencies: [
+        { projectId: 'PRJ-028', relationship: 'Sequential', riskLevel: 'Medium' },
+      { projectId: 'PRJ-029', relationship: 'Sequential', riskLevel: 'Medium' }
+      ],
+      classification: {
+        type: 'National',
+        dgCode: 'DG-864',
+        nscCode: 'NSC-4318'
+      }
   },
   {
     id: 'PRJ-024',
@@ -751,7 +1078,20 @@ export const projects: Project[] = [
     openIssues: 7,
     blockedTasks: 4,
     totalTasks: 189,
-    completedTasks: 117
+    completedTasks: 117,
+    stakeholders: {
+        internal: ['Compliance Team', 'Quality Assurance'],
+        external: ['Regulatory Authority']
+      },
+      dependencies: [
+        { projectId: 'PRJ-005', relationship: 'Sequential', riskLevel: 'High' },
+      { projectId: 'PRJ-030', relationship: 'Blocking', riskLevel: 'High' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-892',
+        nscCode: 'NSC-6282'
+      }
   },
   {
     id: 'PRJ-025',
@@ -779,7 +1119,19 @@ export const projects: Project[] = [
     openIssues: 2,
     blockedTasks: 1,
     totalTasks: 104,
-    completedTasks: 61
+    completedTasks: 61,
+    stakeholders: {
+        internal: ['Internal Audit', 'Executive Board'],
+        external: ['Regulatory Authority', 'Standards Organization']
+      },
+      dependencies: [
+        { projectId: 'PRJ-034', relationship: 'Sequential', riskLevel: 'Low' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-113',
+        nscCode: 'NSC-2950'
+      }
   },
   {
     id: 'PRJ-026',
@@ -807,7 +1159,21 @@ export const projects: Project[] = [
     openIssues: 12,
     blockedTasks: 7,
     totalTasks: 245,
-    completedTasks: 125
+    completedTasks: 125,
+    stakeholders: {
+        internal: ['PMO Office', 'HR Department', 'Internal Audit'],
+        external: ['Environmental Agency', 'Industry Partners']
+      },
+      dependencies: [
+        { projectId: 'PRJ-019', relationship: 'Sequential', riskLevel: 'High' },
+      { projectId: 'PRJ-003', relationship: 'Blocking', riskLevel: 'High' },
+      { projectId: 'PRJ-033', relationship: 'Blocking', riskLevel: 'Medium' }
+      ],
+      classification: {
+        type: 'National',
+        dgCode: 'DG-279',
+        nscCode: 'NSC-1326'
+      }
   },
   {
     id: 'PRJ-027',
@@ -835,7 +1201,21 @@ export const projects: Project[] = [
     openIssues: 1,
     blockedTasks: 0,
     totalTasks: 153,
-    completedTasks: 84
+    completedTasks: 84,
+    stakeholders: {
+        internal: ['HR Department', 'Compliance Team'],
+        external: ['Ministry of Finance', 'International Advisors']
+      },
+      dependencies: [
+        { projectId: 'PRJ-029', relationship: 'Blocking', riskLevel: 'Low' },
+      { projectId: 'PRJ-009', relationship: 'Parallel', riskLevel: 'High' },
+      { projectId: 'PRJ-005', relationship: 'Parallel', riskLevel: 'Low' }
+      ],
+      classification: {
+        type: 'National',
+        dgCode: 'DG-233',
+        nscCode: 'NSC-7411'
+      }
   },
   {
     id: 'PRJ-028',
@@ -863,7 +1243,19 @@ export const projects: Project[] = [
     openIssues: 6,
     blockedTasks: 3,
     totalTasks: 142,
-    completedTasks: 89
+    completedTasks: 89,
+    stakeholders: {
+        internal: ['Marketing Division', 'Business Development', 'Legal Department', 'Operations Team'],
+        external: ['Public Works Authority']
+      },
+      dependencies: [
+        { projectId: 'PRJ-011', relationship: 'Blocking', riskLevel: 'Medium' }
+      ],
+      classification: {
+        type: 'National',
+        dgCode: 'DG-208',
+        nscCode: 'NSC-2734'
+      }
   },
   {
     id: 'PRJ-029',
@@ -891,7 +1283,20 @@ export const projects: Project[] = [
     openIssues: 2,
     blockedTasks: 1,
     totalTasks: 127,
-    completedTasks: 70
+    completedTasks: 70,
+    stakeholders: {
+        internal: ['Legal Department', 'Procurement', 'Executive Board'],
+        external: ['Environmental Agency', 'Municipal Council']
+      },
+      dependencies: [
+        { projectId: 'PRJ-015', relationship: 'Blocking', riskLevel: 'High' },
+      { projectId: 'PRJ-025', relationship: 'Sequential', riskLevel: 'Low' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-666',
+        nscCode: 'NSC-8059'
+      }
   },
   {
     id: 'PRJ-030',
@@ -919,7 +1324,21 @@ export const projects: Project[] = [
     openIssues: 3,
     blockedTasks: 1,
     totalTasks: 178,
-    completedTasks: 105
+    completedTasks: 105,
+    stakeholders: {
+        internal: ['Business Development', 'Internal Audit'],
+        external: ['Consulting Partners']
+      },
+      dependencies: [
+        { projectId: 'PRJ-009', relationship: 'Parallel', riskLevel: 'Low' },
+      { projectId: 'PRJ-015', relationship: 'Blocking', riskLevel: 'Medium' },
+      { projectId: 'PRJ-002', relationship: 'Parallel', riskLevel: 'Low' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-878',
+        nscCode: 'NSC-4020'
+      }
   },
   {
     id: 'PRJ-031',
@@ -947,7 +1366,19 @@ export const projects: Project[] = [
     openIssues: 2,
     blockedTasks: 0,
     totalTasks: 98,
-    completedTasks: 58
+    completedTasks: 58,
+    stakeholders: {
+        internal: ['PMO Office', 'Quality Assurance'],
+        external: ['International Advisors', 'External Auditors']
+      },
+      dependencies: [
+        { projectId: 'PRJ-026', relationship: 'Blocking', riskLevel: 'Medium' }
+      ],
+      classification: {
+        type: 'National',
+        dgCode: 'DG-295',
+        nscCode: 'NSC-6619'
+      }
   },
   {
     id: 'PRJ-032',
@@ -975,7 +1406,19 @@ export const projects: Project[] = [
     openIssues: 7,
     blockedTasks: 5,
     totalTasks: 203,
-    completedTasks: 126
+    completedTasks: 126,
+    stakeholders: {
+        internal: ['Operations Team', 'Procurement', 'Strategy Office', 'HR Department'],
+        external: ['Regulatory Authority', 'Consulting Partners']
+      },
+      dependencies: [
+        { projectId: 'PRJ-016', relationship: 'Sequential', riskLevel: 'Medium' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-531',
+        nscCode: 'NSC-8230'
+      }
   },
   {
     id: 'PRJ-033',
@@ -1003,7 +1446,19 @@ export const projects: Project[] = [
     openIssues: 1,
     blockedTasks: 0,
     totalTasks: 135,
-    completedTasks: 74
+    completedTasks: 74,
+    stakeholders: {
+        internal: ['Strategy Office', 'HR Department', 'Executive Board'],
+        external: ['Central Bank', 'National Planning Commission']
+      },
+      dependencies: [
+        { projectId: 'PRJ-004', relationship: 'Sequential', riskLevel: 'High' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-883',
+        nscCode: 'NSC-1886'
+      }
   },
   {
     id: 'PRJ-034',
@@ -1031,7 +1486,19 @@ export const projects: Project[] = [
     openIssues: 2,
     blockedTasks: 1,
     totalTasks: 115,
-    completedTasks: 67
+    completedTasks: 67,
+    stakeholders: {
+        internal: ['Business Development', 'Executive Board', 'Procurement'],
+        external: ['Central Bank']
+      },
+      dependencies: [
+        { projectId: 'PRJ-033', relationship: 'Blocking', riskLevel: 'Low' }
+      ],
+      classification: {
+        type: 'National',
+        dgCode: 'DG-166',
+        nscCode: 'NSC-1706'
+      }
   },
   {
     id: 'PRJ-035',
@@ -1059,7 +1526,21 @@ export const projects: Project[] = [
     openIssues: 1,
     blockedTasks: 0,
     totalTasks: 92,
-    completedTasks: 53
+    completedTasks: 53,
+    stakeholders: {
+        internal: ['Executive Board', 'Quality Assurance', 'Risk Management', 'Legal Department'],
+        external: ['Regulatory Authority']
+      },
+      dependencies: [
+        { projectId: 'PRJ-002', relationship: 'Parallel', riskLevel: 'Low' },
+      { projectId: 'PRJ-025', relationship: 'Parallel', riskLevel: 'Low' },
+      { projectId: 'PRJ-026', relationship: 'Parallel', riskLevel: 'High' }
+      ],
+      classification: {
+        type: 'Council',
+        dgCode: 'DG-666',
+        nscCode: 'NSC-4833'
+      }
   }
 ];
 

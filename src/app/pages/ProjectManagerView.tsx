@@ -103,8 +103,29 @@ export function ProjectManagerView() {
                 ))}
               </select>
             </div>
-            <div className="ml-4">
+            <div className="ml-4 flex items-center gap-2">
               <StatusBadge status={selectedProject.status} />
+              <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                selectedProject.classification.type === 'National' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+              }`}>
+                {selectedProject.classification.type}
+              </span>
+              {(() => {
+                const maxRisk = selectedProject.dependencies.reduce((max, dep) => {
+                  const order = { 'High': 3, 'Medium': 2, 'Low': 1 };
+                  return order[dep.riskLevel] > order[max] ? dep.riskLevel : max;
+                }, 'Low' as 'High' | 'Medium' | 'Low');
+                return (
+                  <span className={`flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${
+                    maxRisk === 'High' ? 'bg-red-100 text-red-700' :
+                    maxRisk === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+                    'bg-green-100 text-green-700'
+                  }`}>
+                    <AlertCircle className="w-3 h-3" />
+                    Dep. Risk: {maxRisk}
+                  </span>
+                );
+              })()}
             </div>
           </div>
         </div>
